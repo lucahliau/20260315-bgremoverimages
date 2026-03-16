@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Before / After — Background Removal</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; margin: 24px; background: #1a1a1a; color: #eee; }
+    h1 { font-size: 1.25rem; font-weight: 600; margin-bottom: 24px; }
+    .grid { display: grid; gap: 32px; max-width: 900px; }
+    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+    .pair h2 { grid-column: 1 / -1; font-size: 0.875rem; font-weight: 500; color: #888; margin: 0; }
+    .cell { background: #2a2a2a; border-radius: 8px; padding: 12px; }
+    .cell img { width: 100%; height: auto; display: block; border-radius: 4px; }
+    .cell span { display: block; font-size: 0.75rem; color: #666; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Before / After — Background Removal</h1>
+  <div class="grid">
+    <div class="pair">
+      <h2>demo-1.jpg</h2>
+      <div class="cell">
+        <img src="https://placehold.co/400x300/333/eee?text=Before" alt="Before" loading="lazy">
+        <span>Before</span>
+      </div>
+      <div class="cell">
+        <img src="https://placehold.co/400x300/1a472a/90ee90?text=After+%28no+bg%29" alt="After" loading="lazy">
+        <span>After</span>
+      </div>
+    </div>
+    <div class="pair">
+      <h2>demo-2.jpg</h2>
+      <div class="cell">
+        <img src="https://placehold.co/400x300/333/eee?text=Before" alt="Before" loading="lazy">
+        <span>Before</span>
+      </div>
+      <div class="cell">
+        <img src="https://placehold.co/400x300/1a472a/90ee90?text=After+%28no+bg%29" alt="After" loading="lazy">
+        <span>After</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

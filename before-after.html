@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Before & After — Background Removal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; }
+    body { font-family: system-ui, sans-serif; padding: 2rem; background: #111; color: #eee; }
+    h1 { font-size: 1.25rem; margin-bottom: 1.5rem; }
+    .grid { display: grid; gap: 2rem; max-width: 1000px; margin: 0 auto; }
+    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .pair h2 { grid-column: 1 / -1; font-size: 0.85rem; color: #888; font-weight: 500; }
+    .col { text-align: center; }
+    .col label { display: block; font-size: 0.7rem; color: #999; margin-bottom: 0.5rem;
+                 text-transform: uppercase; letter-spacing: 0.05em; }
+    .col img { max-width: 100%; height: auto; border-radius: 6px; background: #222; display: block; }
+    .col.after img {
+      background: repeating-conic-gradient(#333 0% 25%, #222 0% 50%) 50% / 14px 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Before &amp; After — Background Removal</h1>
+  <div class="grid">
+    <div class="pair">
+      <h2>0.jpg</h2>
+      <div class="col"><label>Before</label><img src="https://pub-229cbeffcc6c46aba6601fb108ebb6f8.r2.dev/products/a-cold-wall/acw-x-converse-geo-forma-boot-onyx/0.jpg" alt="Before" loading="lazy"></div>
+      <div class="col after"><label>After</label><img src="https://pub-229cbeffcc6c46aba6601fb108ebb6f8.r2.dev/products/a-cold-wall/acw-x-converse-geo-forma-boot-onyx/0-nobg.png" alt="After" loading="lazy"></div>
+    </div>
+    <div class="pair">
+      <h2>0.jpg</h2>
+      <div class="col"><label>Before</label><img src="https://pub-229cbeffcc6c46aba6601fb108ebb6f8.r2.dev/products/a-cold-wall/acw-x-dr-martens-1461-gehry-shoe/0.jpg" alt="Before" loading="lazy"></div>
+      <div class="col after"><label>After</label><img src="https://pub-229cbeffcc6c46aba6601fb108ebb6f8.r2.dev/products/a-cold-wall/acw-x-dr-martens-1461-gehry-shoe/0-nobg.png" alt="After" loading="lazy"></div>
+    </div>
+    <div class="pair">
+      <h2>0.jpg</h2>
+      <div class="col"><label>Before</label><img src="https://pub-229cbeffcc6c46aba6601fb108ebb6f8.r2.dev/products/a-cold-wall/acw-x-tbl-3-eye-lug-boat-shoe/0.jpg" alt="Before" loading="lazy"></div>
+      <div class="col after"><label>After</label><img src="https://pub-229cbeffcc6c46aba6601fb108ebb6f8.r2.dev/products/a-cold-wall/acw-x-tbl-3-eye-lug-boat-shoe/0-nobg.png" alt="After" loading="lazy"></div>
+    </div>
+    <div class="pair">
+      <h2>0.jpg</h2>
+      <div class="col"><label>Before</label><img src="https://pub-229cbeffcc6c46aba6601fb108ebb6f8.r2.dev/products/a-cold-wall/acw-x-tbl-6inch-boot/0.jpg" alt="Before" loading="lazy"></div>
+      <div class="col after"><label>After</label><img src="https://pub-229cbeffcc6c46aba6601fb108ebb6f8.r2.dev/products/a-cold-wall/acw-x-tbl-6inch-boot/0-nobg.png" alt="After" loading="lazy"></div>
+    </div>
+  </div>
+</body>
+</html>

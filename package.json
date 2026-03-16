@@ -1,0 +1,24 @@
+{
+  "name": "remove-backgrounds",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "npx tsx remove-bg.ts",
+    "generate-html": "npx tsx generate-html.ts",
+    "view": "npx tsx generate-html.ts && open before-after.html",
+    "ui": "npx tsx server.ts",
+    "ui:static": "npx tsx generate-ui.ts",
+    "ui:open": "npx tsx generate-ui.ts && open before-after.html"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1009.0",
+    "@aws-sdk/lib-storage": "^3.1009.0",
+    "@aws-sdk/s3-request-presigner": "^3.1009.0",
+    "@smithy/node-http-handler": "^4.4.16",
+    "tsx": "^4.19.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}
