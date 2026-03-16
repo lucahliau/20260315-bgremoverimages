@@ -1,5 +1,6 @@
 tmp/
 progress.json
+history.jsonl
 run.log
 .env
 node_modules/

@@ -1,9 +1,9 @@
 /**
- * remove-bg.ts — Downloads N images from R2, removes backgrounds via rembg,
- * uploads the results back, then generates a before/after HTML page.
+ * remove-bg-parallel.ts — Same as remove-bg.ts but runs up to 5 images in parallel
+ * for ~5x faster throughput.
  *
- * Usage:  source .env && npx tsx remove-bg.ts [count]
- *         count defaults to 2
+ * Usage:  source .env && npx tsx remove-bg-parallel.ts [count] [parallel]
+ *         count defaults to 2, parallel defaults to 5
  *
  * Required env vars:
  *   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY,
@@ -46,6 +46,7 @@ const R2_BUCKET_NAME = process.env.R2_BUCKET_NAME!;
 const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL!.replace(/\/$/, "");
 
 const IMAGE_COUNT = Math.max(1, parseInt(process.argv[2] || "2", 10));
+const PARALLEL_CHAINS = Math.max(1, parseInt(process.env.PARALLEL_CHAINS || process.argv[3] || "5", 10));
 const MAX_RETRIES = 1;
 const PROGRESS_FILE = path.join(__dirname, "progress.json");
 const HISTORY_FILE = path.join(__dirname, "history.jsonl");
@@ -365,8 +366,8 @@ function appendHistory(key: string, status: "success" | "failed") {
 
 async function main() {
   log("============================================================");
-  log("Background Removal Script Starting");
-  log(`Target: ${IMAGE_COUNT} images`);
+  log("Background Removal Script (PARALLEL) Starting");
+  log(`Target: ${IMAGE_COUNT} images, ${PARALLEL_CHAINS} parallel chains`);
   log("============================================================");
 
   ensureDir(TMP_DIR);
@@ -420,23 +421,26 @@ async function main() {
     return;
   }
 
-  log(`📋 Processing ${toProcess.length} images`);
+  log(`📋 Processing ${toProcess.length} images (${PARALLEL_CHAINS} parallel chains)`);
 
   const succeeded: string[] = [];
   const failed: string[] = [];
 
-  for (let i = 0; i < toProcess.length; i++) {
-    const key = toProcess[i];
-    if (i > 0) await sleep(3000); // 3s cooldown between images
-    const ok = await processImage(key, rembg);
-    if (ok) {
-      succeeded.push(key);
-      progress.completed.push(key);
-      appendHistory(key, "success");
-    } else {
-      failed.push(key);
-      progress.failed.push(key);
-      appendHistory(key, "failed");
+  for (let i = 0; i < toProcess.length; i += PARALLEL_CHAINS) {
+    const chunk = toProcess.slice(i, i + PARALLEL_CHAINS);
+    const results = await Promise.all(
+      chunk.map((key) => processImage(key, rembg).then((ok) => ({ key, ok })))
+    );
+    for (const { key, ok } of results) {
+      if (ok) {
+        succeeded.push(key);
+        progress.completed.push(key);
+        appendHistory(key, "success");
+      } else {
+        failed.push(key);
+        progress.failed.push(key);
+        appendHistory(key, "failed");
+      }
     }
     saveProgress(progress);
   }
