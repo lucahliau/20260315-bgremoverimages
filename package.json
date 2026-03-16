@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "npx tsx remove-bg.ts",
+    "serve": "npx tsx server.ts",
     "generate-html": "npx tsx generate-html.ts",
     "view": "npx tsx generate-html.ts && open before-after.html",
     "ui": "npx tsx server.ts",

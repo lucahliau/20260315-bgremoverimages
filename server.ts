@@ -225,7 +225,7 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
 </body>
 </html>`;
 
-createServer(async (req, res) => {
+const server = createServer(async (req, res) => {
   if (req.url === "/api/pairs") {
     try {
       const pairs = await getPairs();
@@ -266,6 +266,9 @@ createServer(async (req, res) => {
   }
   res.statusCode = 404;
   res.end("Not found");
-}).listen(3457, "127.0.0.1", () => {
-  console.log("UI at http://127.0.0.1:3457 (or http://localhost:3457)");
+});
+
+const port = parseInt(process.env.PORT || "3457", 10);
+server.listen(port, "0.0.0.0", () => {
+  console.log(`Dashboard at http://0.0.0.0:${port}`);
 });
