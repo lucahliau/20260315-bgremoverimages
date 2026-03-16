@@ -133,7 +133,7 @@ const HTML = `<!DOCTYPE html>
 </head>
 <body>
   <h1>Before & After — Background Removal</h1>
-  <div class="nav"><a href="/dashboard">View progress dashboard</a></div>
+  <div class="nav"><a href="/">Dashboard</a></div>
   <div id="root" class="loading">Loading from R2...</div>
   <script>
     fetch('/api/pairs')
@@ -165,30 +165,30 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Background Removal Progress</title>
+  <title>Background Removal — Dashboard</title>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: system-ui, sans-serif; margin: 0; padding: 1.5rem; background: #111; color: #eee; }
-    h1 { font-size: 1.25rem; margin-bottom: 1.5rem; }
-    .nav { margin-bottom: 1.5rem; }
-    .nav a { color: #6af; text-decoration: none; }
-    .nav a:hover { text-decoration: underline; }
-    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 600px; margin-bottom: 2rem; }
-    .stat { background: #222; padding: 1rem; border-radius: 8px; text-align: center; }
-    .stat-value { font-size: 1.75rem; font-weight: 600; }
-    .stat-label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem; }
-    .percent-wrap { max-width: 400px; margin-bottom: 1rem; }
-    .percent-value { font-size: 2.5rem; font-weight: 600; margin-bottom: 0.5rem; }
-    .progress-bar { height: 12px; background: #333; border-radius: 6px; overflow: hidden; }
-    .progress-fill { height: 100%; background: #4a8; transition: width 0.3s ease; }
-    .updated { font-size: 0.8rem; color: #666; }
-    .loading { color: #888; }
-    .error { color: #c44; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 2rem; background: #0d0d0d; color: #f5f5f5; min-height: 100vh; }
+    h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 2rem; letter-spacing: -0.02em; }
+    .nav { margin-bottom: 2rem; }
+    .nav a { color: #8b9dc3; text-decoration: none; font-size: 0.9rem; }
+    .nav a:hover { color: #a8b8e0; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; max-width: 560px; margin-bottom: 2.5rem; }
+    .stat { background: #1a1a1a; padding: 1.25rem; border-radius: 10px; text-align: center; border: 1px solid #252525; }
+    .stat-value { font-size: 1.875rem; font-weight: 600; letter-spacing: -0.02em; }
+    .stat-label { font-size: 0.7rem; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.35rem; }
+    .percent-wrap { max-width: 420px; margin-bottom: 1.25rem; }
+    .percent-value { font-size: 2.75rem; font-weight: 600; margin-bottom: 0.75rem; letter-spacing: -0.03em; color: #e8e8e8; }
+    .progress-bar { height: 10px; background: #252525; border-radius: 5px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #3d7a5c, #4a9d6e); border-radius: 5px; transition: width 0.4s ease; }
+    .updated { font-size: 0.75rem; color: #4a4a4a; }
+    .loading { color: #6b6b6b; }
+    .error { color: #c45c5c; }
   </style>
 </head>
 <body>
-  <h1>Background Removal Progress</h1>
-  <div class="nav"><a href="/">View before/after pairs</a></div>
+  <h1>Background Removal</h1>
+  <div class="nav"><a href="/images">View before/after pairs</a></div>
   <div id="root" class="loading">Loading...</div>
   <div id="updated" class="updated"></div>
   <script>
@@ -254,12 +254,12 @@ const server = createServer(async (req, res) => {
     }
     return;
   }
-  if (req.url === "/dashboard") {
+  if (req.url === "/" || req.url === "/index.html") {
     res.setHeader("Content-Type", "text/html");
     res.end(DASHBOARD_HTML);
     return;
   }
-  if (req.url === "/" || req.url === "/index.html") {
+  if (req.url === "/images") {
     res.setHeader("Content-Type", "text/html");
     res.end(HTML);
     return;
