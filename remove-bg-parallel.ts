@@ -3,7 +3,7 @@
  * for ~5x faster throughput.
  *
  * Usage:  source .env && npx tsx remove-bg-parallel.ts [count] [parallel]
- *         count defaults to 2, parallel defaults to 5
+ *         count defaults to all images; parallel defaults to 5
  *
  * Required env vars:
  *   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY,
@@ -45,7 +45,7 @@ const R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY!;
 const R2_BUCKET_NAME = process.env.R2_BUCKET_NAME!;
 const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL!.replace(/\/$/, "");
 
-const IMAGE_COUNT = Math.max(1, parseInt(process.argv[2] || "2", 10));
+const IMAGE_COUNT = process.argv[2] === undefined ? Infinity : Math.max(1, parseInt(process.argv[2], 10));
 const PARALLEL_CHAINS = Math.max(1, parseInt(process.env.PARALLEL_CHAINS || process.argv[3] || "5", 10));
 const MAX_RETRIES = 1;
 const PROGRESS_FILE = path.join(__dirname, "progress.json");
@@ -367,7 +367,7 @@ function appendHistory(key: string, status: "success" | "failed") {
 async function main() {
   log("============================================================");
   log("Background Removal Script (PARALLEL) Starting");
-  log(`Target: ${IMAGE_COUNT} images, ${PARALLEL_CHAINS} parallel chains`);
+  log(`Target: ${IMAGE_COUNT === Infinity ? "all" : IMAGE_COUNT} images, ${PARALLEL_CHAINS} parallel chains`);
   log("============================================================");
 
   ensureDir(TMP_DIR);
@@ -407,7 +407,7 @@ async function main() {
 
   log(`Found ${originals.length} unprocessed images out of ${allKeys.length} total keys`);
 
-  const toProcess = originals.slice(0, IMAGE_COUNT);
+  const toProcess = [...originals].reverse().slice(0, IMAGE_COUNT);
   if (toProcess.length === 0) {
     log("Nothing to process! All images already have -nobg versions.");
     if (progress.completed.length > 0) {

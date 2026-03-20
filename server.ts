@@ -5,7 +5,6 @@
 
 import { createServer } from "http";
 import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
-import * as fs from "fs";
 import * as path from "path";
 
 for (const k of ["R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET_NAME", "R2_PUBLIC_URL"]) {
@@ -107,14 +106,7 @@ async function getStats(): Promise<{
   };
 }
 
-const HISTORY_FILE = path.join(__dirname, "history.jsonl");
-
-interface HistoryEntry {
-  key: string;
-  status: "success" | "failed";
-  ts: string;
-}
-
+/** Recent activity from R2 object LastModified (works when server ≠ batch machine). */
 async function getRates(): Promise<{
   last24h: { count: number; ratePerHour: number };
   last1h: { count: number; ratePerHour: number };
@@ -123,11 +115,11 @@ async function getRates(): Promise<{
 }> {
   const now = Date.now();
   const windows = [
-    { name: "last24h", seconds: 24 * 3600 },
-    { name: "last1h", seconds: 3600 },
-    { name: "last10m", seconds: 10 * 60 },
-    { name: "last60s", seconds: 60 },
-  ] as const;
+    { name: "last24h" as const, seconds: 24 * 3600 },
+    { name: "last1h" as const, seconds: 3600 },
+    { name: "last10m" as const, seconds: 10 * 60 },
+    { name: "last60s" as const, seconds: 60 },
+  ];
 
   const result = {
     last24h: { count: 0, ratePerHour: 0 },
@@ -136,33 +128,33 @@ async function getRates(): Promise<{
     last60s: { count: 0, ratePerHour: 0 },
   };
 
-  if (!fs.existsSync(HISTORY_FILE)) {
-    return result;
-  }
-
-  const content = fs.readFileSync(HISTORY_FILE, "utf-8");
-  const lines = content.trim().split("\n").filter(Boolean);
-
-  for (const line of lines) {
-    try {
-      const entry: HistoryEntry = JSON.parse(line);
-      if (entry.status !== "success") continue;
-      const ts = new Date(entry.ts).getTime();
+  let continuationToken: string | undefined;
+  do {
+    const res = await r2.send(
+      new ListObjectsV2Command({
+        Bucket: R2_BUCKET_NAME,
+        Prefix: "products/",
+        ContinuationToken: continuationToken,
+        MaxKeys: 1000,
+      })
+    );
+    for (const obj of res.Contents ?? []) {
+      if (!obj.Key?.endsWith("-nobg.png") || !obj.LastModified) continue;
+      const ts = obj.LastModified.getTime();
       for (const w of windows) {
         const cutoff = now - w.seconds * 1000;
         if (ts >= cutoff) {
           result[w.name].count++;
         }
       }
-    } catch {
-      /* skip malformed lines */
     }
-  }
+    continuationToken = res.NextContinuationToken;
+  } while (continuationToken);
 
   for (const w of windows) {
     const { count } = result[w.name];
     result[w.name].ratePerHour =
-      w.seconds > 0 ? Math.round((count * 3600) / w.seconds * 10) / 10 : count * 60;
+      w.seconds > 0 ? Math.round(((count * 3600) / w.seconds) * 10) / 10 : count * 60;
   }
 
   return result;
