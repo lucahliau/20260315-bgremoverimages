@@ -235,6 +235,10 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
     .percent-value { font-size: 2.75rem; font-weight: 600; margin-bottom: 0.75rem; letter-spacing: -0.03em; color: #e8e8e8; }
     .progress-bar { height: 10px; background: #252525; border-radius: 5px; overflow: hidden; }
     .progress-fill { height: 100%; background: linear-gradient(90deg, #3d7a5c, #4a9d6e); border-radius: 5px; transition: width 0.4s ease; }
+    .eta-wrap { max-width: 420px; margin-bottom: 2rem; padding: 1rem 1.25rem; background: #1a1a1a; border-radius: 10px; border: 1px solid #252525; }
+    .eta-label { font-size: 0.7rem; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
+    .eta-value { font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; color: #c9d4e8; font-variant-numeric: tabular-nums; }
+    .eta-note { font-size: 0.75rem; color: #5a5a5a; margin-top: 0.35rem; }
     .rates-section { margin-top: 2.5rem; }
     .rates-title { font-size: 0.85rem; font-weight: 600; color: #8b9dc3; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.06em; }
     .rates-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; max-width: 720px; }
@@ -253,6 +257,33 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
   <div id="root" class="loading">Loading...</div>
   <div id="updated" class="updated"></div>
   <script>
+    function formatEtaHms(totalSeconds) {
+      var sec = Math.max(0, Math.floor(totalSeconds));
+      var h = Math.floor(sec / 3600);
+      var m = Math.floor((sec % 3600) / 60);
+      var s = sec % 60;
+      return h + 'h ' + m + 'm ' + s + 's';
+    }
+    function etaBlock(stats, rates) {
+      var rem = stats.remaining;
+      if (rem <= 0) {
+        return '<div class="eta-wrap"><div class="eta-label">Est. time to completion (last 60s rate)</div>' +
+          '<div class="eta-value">' + formatEtaHms(0) + '</div><div class="eta-note">Nothing left to process</div></div>';
+      }
+      if (!rates || rates.error || !rates.last60s) {
+        return '<div class="eta-wrap"><div class="eta-label">Est. time to completion (last 60s rate)</div>' +
+          '<div class="eta-value">—</div><div class="eta-note">Rates unavailable</div></div>';
+      }
+      var c60 = rates.last60s.count;
+      if (c60 <= 0) {
+        return '<div class="eta-wrap"><div class="eta-label">Est. time to completion (last 60s rate)</div>' +
+          '<div class="eta-value">—</div><div class="eta-note">No -nobg uploads in the last 60s</div></div>';
+      }
+      var etaSec = Math.ceil(rem * 60 / c60);
+      return '<div class="eta-wrap"><div class="eta-label">Est. time to completion (last 60s rate)</div>' +
+        '<div class="eta-value">' + formatEtaHms(etaSec) + '</div>' +
+        '<div class="eta-note">' + rem.toLocaleString() + ' remaining at ' + c60 + ' / 60s</div></div>';
+    }
     function render(stats, rates) {
       if (stats.error) {
         document.getElementById('root').innerHTML = '<p class="error">' + stats.error + '</p>';
@@ -279,6 +310,7 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
         '<div class="percent-value">' + stats.percent + '%</div>' +
         '<div class="progress-bar"><div class="progress-fill" style="width:' + stats.percent + '%"></div></div>' +
         '</div>' +
+        etaBlock(stats, rates) +
         ratesHtml;
     }
     function poll() {
