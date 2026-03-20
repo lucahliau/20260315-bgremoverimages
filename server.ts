@@ -235,7 +235,9 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
     .percent-value { font-size: 2.75rem; font-weight: 600; margin-bottom: 0.75rem; letter-spacing: -0.03em; color: #e8e8e8; }
     .progress-bar { height: 10px; background: #252525; border-radius: 5px; overflow: hidden; }
     .progress-fill { height: 100%; background: linear-gradient(90deg, #3d7a5c, #4a9d6e); border-radius: 5px; transition: width 0.4s ease; }
-    .eta-wrap { max-width: 420px; margin-bottom: 2rem; padding: 1rem 1.25rem; background: #1a1a1a; border-radius: 10px; border: 1px solid #252525; }
+    .eta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; max-width: 720px; margin-bottom: 2rem; }
+    @media (max-width: 640px) { .eta-grid { grid-template-columns: 1fr; } }
+    .eta-wrap { padding: 1rem 1.25rem; background: #1a1a1a; border-radius: 10px; border: 1px solid #252525; }
     .eta-label { font-size: 0.7rem; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
     .eta-value { font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; color: #c9d4e8; font-variant-numeric: tabular-nums; }
     .eta-note { font-size: 0.75rem; color: #5a5a5a; margin-top: 0.35rem; }
@@ -264,25 +266,34 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
       var s = sec % 60;
       return h + 'h ' + m + 'm ' + s + 's';
     }
-    function etaBlock(stats, rates) {
-      var rem = stats.remaining;
+    function etaOne(rem, rates, label, windowSec, countKey, noteWhenOk) {
       if (rem <= 0) {
-        return '<div class="eta-wrap"><div class="eta-label">Est. time to completion (last 60s rate)</div>' +
+        return '<div class="eta-wrap"><div class="eta-label">' + label + '</div>' +
           '<div class="eta-value">' + formatEtaHms(0) + '</div><div class="eta-note">Nothing left to process</div></div>';
       }
-      if (!rates || rates.error || !rates.last60s) {
-        return '<div class="eta-wrap"><div class="eta-label">Est. time to completion (last 60s rate)</div>' +
+      if (!rates || rates.error || !rates[countKey]) {
+        return '<div class="eta-wrap"><div class="eta-label">' + label + '</div>' +
           '<div class="eta-value">—</div><div class="eta-note">Rates unavailable</div></div>';
       }
-      var c60 = rates.last60s.count;
-      if (c60 <= 0) {
-        return '<div class="eta-wrap"><div class="eta-label">Est. time to completion (last 60s rate)</div>' +
-          '<div class="eta-value">—</div><div class="eta-note">No -nobg uploads in the last 60s</div></div>';
+      var c = rates[countKey].count;
+      if (c <= 0) {
+        return '<div class="eta-wrap"><div class="eta-label">' + label + '</div>' +
+          '<div class="eta-value">—</div><div class="eta-note">No -nobg uploads in this window</div></div>';
       }
-      var etaSec = Math.ceil(rem * 60 / c60);
-      return '<div class="eta-wrap"><div class="eta-label">Est. time to completion (last 60s rate)</div>' +
+      var etaSec = Math.ceil(rem * windowSec / c);
+      return '<div class="eta-wrap"><div class="eta-label">' + label + '</div>' +
         '<div class="eta-value">' + formatEtaHms(etaSec) + '</div>' +
-        '<div class="eta-note">' + rem.toLocaleString() + ' remaining at ' + c60 + ' / 60s</div></div>';
+        '<div class="eta-note">' + noteWhenOk + '</div></div>';
+    }
+    function etaBlock(stats, rates) {
+      var rem = stats.remaining;
+      var note60 = rem > 0 && rates && !rates.error && rates.last60s && rates.last60s.count > 0
+        ? rem.toLocaleString() + ' remaining at ' + rates.last60s.count + ' / 60s' : '';
+      var note1h = rem > 0 && rates && !rates.error && rates.last1h && rates.last1h.count > 0
+        ? rem.toLocaleString() + ' remaining at ' + rates.last1h.count + ' / 1h' : '';
+      var a = etaOne(rem, rates, 'Est. time to completion (last 60s rate)', 60, 'last60s', note60);
+      var b = etaOne(rem, rates, 'Est. time to completion (last hour rate)', 3600, 'last1h', note1h);
+      return '<div class="eta-grid">' + a + b + '</div>';
     }
     function render(stats, rates) {
       if (stats.error) {
