@@ -1,10 +1,17 @@
 tmp/
+tmp-tag-nobg/
 progress.json
 history.jsonl
 run.log
+tag-nobg-quality-progress.json
+tag-nobg-quality-history.jsonl
+tag-nobg-quality.log
 .env
 node_modules/
 venv/
 .numba_cache/
 .DS_Store
 local-test-output/
+
+# YOLO weights (downloaded on first ultralytics run)
+*.pt

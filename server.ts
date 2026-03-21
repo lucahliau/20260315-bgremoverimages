@@ -208,35 +208,115 @@ async function getRates(): Promise<{
   return { ...result, newProducts };
 }
 
+const SHARED_PAGE_CSS = `
+    :root {
+      --bg: #0c0c0d;
+      --surface: #131316;
+      --border: rgba(255, 255, 255, 0.07);
+      --text: #ececed;
+      --muted: #8e8e93;
+      --faint: #5a5a5e;
+      --link: #7a9fd4;
+      --link-hover: #9bb6e8;
+      --radius: 8px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.5;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+    .shell { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem 3rem; }
+    .page-head {
+      padding: 1.75rem 0 1.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+    .page-head h1 {
+      margin: 0 0 0.35rem 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .page-head .sub { margin: 0; font-size: 0.8125rem; color: var(--muted); font-weight: 400; }
+    .page-head .row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 1rem; }
+    .nav a {
+      font-size: 0.8125rem;
+      color: var(--link);
+      text-decoration: none;
+    }
+    .nav a:hover { color: var(--link-hover); text-decoration: underline; text-underline-offset: 3px; }
+    .loading { color: var(--muted); font-size: 0.875rem; }
+    .grid { display: grid; gap: 1.75rem; }
+    .pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem 1.25rem;
+      align-items: start;
+      padding-bottom: 1.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .pair:last-child { border-bottom: none; padding-bottom: 0; }
+    .pair h2 {
+      grid-column: 1 / -1;
+      margin: 0 0 0.5rem 0;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+    .col { text-align: center; }
+    .col label {
+      display: block;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      color: var(--faint);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .col img {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--radius);
+      background: var(--surface);
+      display: block;
+      border: 1px solid var(--border);
+    }
+    .col.after img {
+      background: repeating-conic-gradient(#1e1e22 0% 25%, #16161a 0% 50%) 50% / 14px 14px;
+    }
+    .col img[src=""] { min-height: 120px; }
+    .error { color: #d96b6b; font-size: 0.875rem; }
+    .empty { color: var(--muted); font-size: 0.875rem; margin: 0; }
+`;
+
 const HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Before & After — Background Removal</title>
-  <style>
-    * { box-sizing: border-box; }
-    body { font-family: system-ui, sans-serif; margin: 0; padding: 1.5rem; background: #111; color: #eee; }
-    h1 { font-size: 1.25rem; margin-bottom: 1.5rem; }
-    .nav { margin-bottom: 1rem; }
-    .nav a { color: #6af; text-decoration: none; }
-    .nav a:hover { text-decoration: underline; }
-    .loading { color: #888; }
-    .grid { display: grid; gap: 1.5rem; max-width: 1000px; margin: 0 auto; }
-    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
-    .pair h2 { grid-column: 1 / -1; font-size: 0.8rem; color: #666; margin: 0 0 0.25rem 0; font-weight: 500; }
-    .col { text-align: center; }
-    .col label { display: block; font-size: 0.7rem; color: #888; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .col img { max-width: 100%; height: auto; border-radius: 6px; background: #222; display: block; }
-    .col.after img { background: repeating-conic-gradient(#333 0% 25%, #222 0% 50%) 50% / 12px 12px; }
-    .col img[src=""] { min-height: 120px; }
-    .error { color: #c44; }
-  </style>
+  <title>Before / after — Background removal</title>
+  <style>${SHARED_PAGE_CSS}</style>
 </head>
 <body>
-  <h1>Before & After — Background Removal</h1>
-  <div class="nav"><a href="/">Dashboard</a></div>
-  <div id="root" class="loading">Loading from R2...</div>
+  <div class="shell">
+    <header class="page-head">
+      <div class="row">
+        <div>
+          <h1>Before / after</h1>
+          <p class="sub">Original and background-removed images from R2</p>
+        </div>
+        <nav class="nav"><a href="/">Dashboard</a></nav>
+      </div>
+    </header>
+    <div id="root" class="loading">Loading from R2…</div>
   <script>
     fetch('/api/pairs')
       .then(r => r.json())
@@ -246,7 +326,7 @@ const HTML = `<!DOCTYPE html>
           return;
         }
         if (pairs.length === 0) {
-          document.getElementById('root').innerHTML = '<p>No -nobg.png files found in R2.</p>';
+          document.getElementById('root').innerHTML = '<p class="empty">No -nobg.png files found in R2.</p>';
           return;
         }
         document.getElementById('root').innerHTML = '<div class="grid">' + pairs.map(p =>
@@ -259,6 +339,7 @@ const HTML = `<!DOCTYPE html>
         document.getElementById('root').innerHTML = '<p class="error">' + e.message + '</p>';
       });
   </script>
+  </div>
 </body>
 </html>`;
 
@@ -267,46 +348,194 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Background Removal — Dashboard</title>
+  <title>Background removal — Dashboard</title>
   <style>
+    :root {
+      --bg: #0c0c0d;
+      --surface: #131316;
+      --border: rgba(255, 255, 255, 0.07);
+      --text: #ececed;
+      --muted: #8e8e93;
+      --faint: #5a5a5e;
+      --link: #7a9fd4;
+      --link-hover: #9bb6e8;
+      --accent: #2f8f62;
+      --accent-dim: rgba(47, 143, 98, 0.35);
+      --radius: 8px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    }
     * { box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 2rem; background: #0d0d0d; color: #f5f5f5; min-height: 100vh; }
-    h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 2rem; letter-spacing: -0.02em; }
-    .nav { margin-bottom: 2rem; }
-    .nav a { color: #8b9dc3; text-decoration: none; font-size: 0.9rem; }
-    .nav a:hover { color: #a8b8e0; }
-    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1.25rem; max-width: 720px; margin-bottom: 2.5rem; }
-    .stat { background: #1a1a1a; padding: 1.25rem; border-radius: 10px; text-align: center; border: 1px solid #252525; }
-    .stat-value { font-size: 1.875rem; font-weight: 600; letter-spacing: -0.02em; }
-    .stat-label { font-size: 0.7rem; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.35rem; }
-    .percent-wrap { max-width: 420px; margin-bottom: 2rem; }
-    .percent-value { font-size: 2.75rem; font-weight: 600; margin-bottom: 0.75rem; letter-spacing: -0.03em; color: #e8e8e8; }
-    .progress-bar { height: 10px; background: #252525; border-radius: 5px; overflow: hidden; }
-    .progress-fill { height: 100%; background: linear-gradient(90deg, #3d7a5c, #4a9d6e); border-radius: 5px; transition: width 0.4s ease; }
-    .eta-wrap { max-width: 420px; margin-bottom: 2rem; padding: 1rem 1.25rem; background: #1a1a1a; border-radius: 10px; border: 1px solid #252525; }
-    .eta-label { font-size: 0.7rem; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.5;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+    .shell { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem 2.5rem; }
+    .page-head {
+      padding: 1.75rem 0 1.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+    .page-head .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem 1.5rem;
+    }
+    .page-head h1 {
+      margin: 0 0 0.35rem 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .page-head .sub { margin: 0; font-size: 0.8125rem; color: var(--muted); font-weight: 400; }
+    .nav a {
+      font-size: 0.8125rem;
+      color: var(--link);
+      text-decoration: none;
+    }
+    .nav a:hover { color: var(--link-hover); text-decoration: underline; text-underline-offset: 3px; }
+    .stack { display: flex; flex-direction: column; gap: 1.75rem; }
+    .section-label {
+      margin: 0 0 0.75rem 0;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--faint);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
+    @media (max-width: 720px) {
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    .stat {
+      background: var(--surface);
+      padding: 1rem 0.875rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.2;
+    }
+    .stat-label {
+      font-size: 0.6875rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+      letter-spacing: 0.04em;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.35rem;
+    }
+    .panel--progress .percent-value {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.65rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .progress-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+      transition: width 0.45s ease;
+      box-shadow: 0 0 12px var(--accent-dim);
+    }
+    .eta-label {
+      font-size: 0.6875rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.35rem;
+    }
     .eta-label + .eta-value + .eta-label { margin-top: 0.85rem; }
-    .eta-value { font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; color: #c9d4e8; font-variant-numeric: tabular-nums; }
-    .eta-at { font-size: 1.05rem; font-weight: 500; color: #a8b8d4; }
-    .eta-note { font-size: 0.75rem; color: #5a5a5a; margin-top: 0.5rem; }
-    .rates-section { margin-top: 2.5rem; }
-    .rates-section + .rates-section { margin-top: 2rem; }
-    .rates-title { font-size: 0.85rem; font-weight: 600; color: #8b9dc3; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.06em; }
-    .rates-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; max-width: 720px; }
-    .rate-card { background: #1a1a1a; padding: 1rem; border-radius: 10px; border: 1px solid #252525; }
-    .rate-card .window { font-size: 0.7rem; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.25rem; }
-    .rate-card .count { font-size: 1.5rem; font-weight: 600; }
-    .rate-card .rate { font-size: 0.75rem; color: #6a9d7a; margin-top: 0.25rem; }
-    .updated { font-size: 0.75rem; color: #4a4a4a; margin-top: 1rem; }
-    .loading { color: #6b6b6b; }
-    .error { color: #c45c5c; }
+    .eta-value {
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+    }
+    .eta-at { font-size: 1rem; font-weight: 500; color: var(--muted); }
+    .eta-note { font-size: 0.75rem; color: var(--faint); margin-top: 0.65rem; line-height: 1.45; }
+    .rates-block { margin-top: 0.25rem; }
+    .rates-block + .rates-block { margin-top: 1.75rem; padding-top: 1.75rem; border-top: 1px solid var(--border); }
+    .rates-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
+    @media (max-width: 900px) {
+      .rates-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .rate-card {
+      background: var(--bg);
+      padding: 0.875rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    .rate-card .window {
+      font-size: 0.6875rem;
+      color: var(--faint);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.2rem;
+    }
+    .rate-card .count {
+      font-size: 1.25rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+    .rate-card .rate { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+    .footnote { font-size: 0.75rem; color: var(--faint); margin-top: 0.65rem; line-height: 1.45; max-width: 52ch; }
+    .page-foot {
+      margin-top: 2.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--faint);
+    }
+    .loading { color: var(--muted); font-size: 0.875rem; }
+    .error { color: #d96b6b; font-size: 0.875rem; }
   </style>
 </head>
 <body>
-  <h1>Background Removal</h1>
-  <div class="nav"><a href="/images">View before/after pairs</a></div>
-  <div id="root" class="loading">Loading...</div>
-  <div id="updated" class="updated"></div>
+  <div class="shell">
+    <header class="page-head">
+      <div class="row">
+        <div>
+          <h1>Background removal</h1>
+          <p class="sub">Progress across images in R2 · Refreshes every 5s</p>
+        </div>
+        <nav class="nav"><a href="/images">Before / after</a></nav>
+      </div>
+    </header>
+    <div id="root" class="loading">Loading…</div>
+    <footer id="updated" class="page-foot" aria-live="polite"></footer>
+  </div>
   <script>
     function formatEtaHms(totalSeconds) {
       var sec = Math.max(0, Math.floor(totalSeconds));
@@ -322,35 +551,35 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
     function etaBlock(stats, rates) {
       var rem = stats.remaining;
       if (rem <= 0) {
-        return '<div class="eta-wrap">' +
-          '<div class="eta-label">Est. time remaining (last 60s rate)</div>' +
+        return '<div class="panel">' +
+          '<div class="eta-label">Time remaining (60s rate)</div>' +
           '<div class="eta-value">' + formatEtaHms(0) + '</div>' +
-          '<div class="eta-label">Est. completion time</div>' +
+          '<div class="eta-label">Completion time</div>' +
           '<div class="eta-value eta-at">—</div>' +
           '<div class="eta-note">Nothing left to process</div></div>';
       }
       if (!rates || rates.error || !rates.last60s) {
-        return '<div class="eta-wrap">' +
-          '<div class="eta-label">Est. time remaining (last 60s rate)</div>' +
+        return '<div class="panel">' +
+          '<div class="eta-label">Time remaining (60s rate)</div>' +
           '<div class="eta-value">—</div>' +
-          '<div class="eta-label">Est. completion time</div>' +
+          '<div class="eta-label">Completion time</div>' +
           '<div class="eta-value eta-at">—</div>' +
           '<div class="eta-note">Rates unavailable</div></div>';
       }
       var c60 = rates.last60s.count;
       if (c60 <= 0) {
-        return '<div class="eta-wrap">' +
-          '<div class="eta-label">Est. time remaining (last 60s rate)</div>' +
+        return '<div class="panel">' +
+          '<div class="eta-label">Time remaining (60s rate)</div>' +
           '<div class="eta-value">—</div>' +
-          '<div class="eta-label">Est. completion time</div>' +
+          '<div class="eta-label">Completion time</div>' +
           '<div class="eta-value eta-at">—</div>' +
           '<div class="eta-note">No -nobg uploads in the last 60s</div></div>';
       }
       var etaSec = Math.ceil(rem * 60 / c60);
-      return '<div class="eta-wrap">' +
-        '<div class="eta-label">Est. time remaining (last 60s rate)</div>' +
+      return '<div class="panel">' +
+        '<div class="eta-label">Time remaining (60s rate)</div>' +
         '<div class="eta-value">' + formatEtaHms(etaSec) + '</div>' +
-        '<div class="eta-label">Est. completion time</div>' +
+        '<div class="eta-label">Completion time</div>' +
         '<div class="eta-value eta-at">' + formatCompletionAt(etaSec) + '</div>' +
         '<div class="eta-note">' + rem.toLocaleString() + ' remaining at ' + c60 + ' / 60s</div></div>';
     }
@@ -362,8 +591,8 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
       var ratesHtml = '';
       var np = rates && !rates.error && rates.newProducts ? rates.newProducts : null;
       if (rates && !rates.error) {
-        ratesHtml = '<div class="rates-section">' +
-          '<div class="rates-title">Backgrounds removed (recent activity)</div>' +
+        ratesHtml = '<div class="rates-block">' +
+          '<p class="section-label">Backgrounds removed</p>' +
           '<div class="rates-grid">' +
           '<div class="rate-card"><div class="window">Last 24 hours</div><div class="count">' + rates.last24h.count + '</div><div class="rate">' + rates.last24h.ratePerHour + '/hr</div></div>' +
           '<div class="rate-card"><div class="window">Last hour</div><div class="count">' + rates.last1h.count + '</div><div class="rate">' + rates.last1h.ratePerHour + '/hr</div></div>' +
@@ -371,31 +600,34 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
           '<div class="rate-card"><div class="window">Last 60 secs</div><div class="count">' + rates.last60s.count + '</div><div class="rate">' + rates.last60s.ratePerHour + '/hr</div></div>' +
           '</div></div>';
         if (np) {
-          ratesHtml += '<div class="rates-section">' +
-            '<div class="rates-title">New products (inferred from R2)</div>' +
+          ratesHtml += '<div class="rates-block">' +
+            '<p class="section-label">New products</p>' +
             '<div class="rates-grid">' +
             '<div class="rate-card"><div class="window">Last 24 hours</div><div class="count">' + np.last24h.count + '</div><div class="rate">' + np.last24h.ratePerHour + '/hr</div></div>' +
             '<div class="rate-card"><div class="window">Last hour</div><div class="count">' + np.last1h.count + '</div><div class="rate">' + np.last1h.ratePerHour + '/hr</div></div>' +
             '<div class="rate-card"><div class="window">Last 10 mins</div><div class="count">' + np.last10m.count + '</div><div class="rate">' + np.last10m.ratePerHour + '/hr</div></div>' +
             '<div class="rate-card"><div class="window">Last 60 secs</div><div class="count">' + np.last60s.count + '</div><div class="rate">' + np.last60s.ratePerHour + '/hr</div></div>' +
             '</div>' +
-            '<div class="eta-note" style="margin-top:0.75rem;max-width:720px">Based on oldest object time per product folder (min. LastModified).</div></div>';
+            '<p class="footnote">Inferred from oldest object time per product folder (min. LastModified).</p></div>';
         }
       }
       var totalProductsVal = typeof stats.totalProducts === 'number' ? stats.totalProducts.toLocaleString() : '—';
       document.getElementById('root').innerHTML =
-        '<div class="stats">' +
+        '<div class="stack">' +
+        '<div><p class="section-label">Overview</p><div class="kpi-row">' +
         '<div class="stat"><div class="stat-value">' + stats.total.toLocaleString() + '</div><div class="stat-label">Total images</div></div>' +
-        '<div class="stat"><div class="stat-value">' + totalProductsVal + '</div><div class="stat-label">Total products</div></div>' +
+        '<div class="stat"><div class="stat-value">' + totalProductsVal + '</div><div class="stat-label">Products</div></div>' +
         '<div class="stat"><div class="stat-value">' + stats.withNobg.toLocaleString() + '</div><div class="stat-label">With no-bg</div></div>' +
         '<div class="stat"><div class="stat-value">' + stats.remaining.toLocaleString() + '</div><div class="stat-label">Remaining</div></div>' +
-        '</div>' +
-        '<div class="percent-wrap">' +
+        '</div></div>' +
+        '<div class="panel panel--progress">' +
+        '<p class="section-label">Progress</p>' +
         '<div class="percent-value">' + stats.percent + '%</div>' +
         '<div class="progress-bar"><div class="progress-fill" style="width:' + stats.percent + '%"></div></div>' +
         '</div>' +
-        etaBlock(stats, rates) +
-        ratesHtml;
+        '<div><p class="section-label">ETA</p>' + etaBlock(stats, rates) + '</div>' +
+        ratesHtml +
+        '</div>';
     }
     function poll() {
       Promise.all([fetch('/api/stats').then(r => r.json()), fetch('/api/rates').then(r => r.json())])

@@ -10,7 +10,8 @@
     "view": "npx tsx generate-html.ts && open before-after.html",
     "ui": "npx tsx server.ts",
     "ui:static": "npx tsx generate-ui.ts",
-    "ui:open": "npx tsx generate-ui.ts && open before-after.html"
+    "ui:open": "npx tsx generate-ui.ts && open before-after.html",
+    "tag-nobg": "python3 tag-nobg-quality.py"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1009.0",

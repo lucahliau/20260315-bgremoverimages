@@ -91,6 +91,29 @@ function nobgKey(originalKey: string): string {
   return `${p.dir}/${p.name}-nobg.png`;
 }
 
+/** Stems (path without extension) that have a *-nobg__REJECT-*.png sibling */
+function buildRejectStemSet(allKeys: Iterable<string>): Set<string> {
+  const stems = new Set<string>();
+  const re = /^(.+)-nobg__REJECT-.+\.png$/;
+  for (const k of allKeys) {
+    const m = k.match(re);
+    if (m) stems.add(m[1]!);
+  }
+  return stems;
+}
+
+/** True if a -nobg.png exists or a tag-nobg-quality reject sibling exists */
+function hasNobgResult(
+  originalKey: string,
+  allKeys: Set<string>,
+  rejectStems: Set<string>
+): boolean {
+  const p = path.parse(originalKey);
+  const stem = p.dir ? `${p.dir}/${p.name}` : p.name;
+  if (allKeys.has(`${stem}-nobg.png`)) return true;
+  return rejectStems.has(stem);
+}
+
 /** Retry wrapper for transient network errors (SSL handshake, ECONNRESET) */
 async function withRetry<T>(label: string, fn: () => Promise<T>, retries = 3): Promise<T> {
   for (let i = 1; i <= retries; i++) {
@@ -394,12 +417,13 @@ async function main() {
   log("Listing R2 objects...");
   const allKeys = await listOriginalKeys();
   const allKeySet = new Set(allKeys);
+  const rejectStems = buildRejectStemSet(allKeys);
 
   const imageExts = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"]);
   const originals = allKeys.filter((k) => {
     if (k.endsWith("-nobg.png")) return false;
     if (!imageExts.has(path.extname(k).toLowerCase())) return false;
-    if (allKeySet.has(nobgKey(k))) return false;
+    if (hasNobgResult(k, allKeySet, rejectStems)) return false;
     if (progress.completed.includes(k)) return false;
     return true;
   });
