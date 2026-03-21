@@ -48,6 +48,13 @@ async function listAllKeys(): Promise<string[]> {
   return keys;
 }
 
+/** products/retailer/slug/file -> products/retailer/slug */
+function productPrefixFromKey(key: string): string | null {
+  const parts = key.split("/");
+  if (parts.length < 4 || parts[0] !== "products") return null;
+  return `${parts[0]}/${parts[1]}/${parts[2]}`;
+}
+
 function originalKeyFromNobg(nobgKey: string, allKeys: Set<string>): string | null {
   // products/retailer/slug/0-nobg.png -> products/retailer/slug/0
   const base = nobgKey.replace(/-nobg\.png$/, "");
@@ -81,6 +88,7 @@ async function getPairs(): Promise<{ before: string; after: string; name: string
 
 async function getStats(): Promise<{
   total: number;
+  totalProducts: number;
   withNobg: number;
   percent: number;
   remaining: number;
@@ -92,6 +100,11 @@ async function getStats(): Promise<{
     if (k.endsWith("-nobg.png")) return false;
     return imageExts.has(path.extname(k).toLowerCase());
   });
+  const productPrefixes = new Set<string>();
+  for (const o of originals) {
+    const prefix = productPrefixFromKey(o);
+    if (prefix) productPrefixes.add(prefix);
+  }
   const withNobg = originals.filter((o) => {
     const p = path.parse(o);
     const nobg = `${p.dir}/${p.name}-nobg.png`;
@@ -100,18 +113,27 @@ async function getStats(): Promise<{
   const total = originals.length;
   return {
     total,
+    totalProducts: productPrefixes.size,
     withNobg,
     percent: total > 0 ? Math.round((withNobg / total) * 1000) / 10 : 0,
     remaining: total - withNobg,
   };
 }
 
+type RateWindow = { count: number; ratePerHour: number };
+
 /** Recent activity from R2 object LastModified (works when server ≠ batch machine). */
 async function getRates(): Promise<{
-  last24h: { count: number; ratePerHour: number };
-  last1h: { count: number; ratePerHour: number };
-  last10m: { count: number; ratePerHour: number };
-  last60s: { count: number; ratePerHour: number };
+  last24h: RateWindow;
+  last1h: RateWindow;
+  last10m: RateWindow;
+  last60s: RateWindow;
+  newProducts: {
+    last24h: RateWindow;
+    last1h: RateWindow;
+    last10m: RateWindow;
+    last60s: RateWindow;
+  };
 }> {
   const now = Date.now();
   const windows = [
@@ -128,6 +150,8 @@ async function getRates(): Promise<{
     last60s: { count: 0, ratePerHour: 0 },
   };
 
+  const prefixMinTime = new Map<string, number>();
+
   let continuationToken: string | undefined;
   do {
     const res = await r2.send(
@@ -139,8 +163,14 @@ async function getRates(): Promise<{
       })
     );
     for (const obj of res.Contents ?? []) {
-      if (!obj.Key?.endsWith("-nobg.png") || !obj.LastModified) continue;
+      if (!obj.Key || !obj.LastModified) continue;
       const ts = obj.LastModified.getTime();
+      const prefix = productPrefixFromKey(obj.Key);
+      if (prefix) {
+        const prev = prefixMinTime.get(prefix);
+        if (prev === undefined || ts < prev) prefixMinTime.set(prefix, ts);
+      }
+      if (!obj.Key.endsWith("-nobg.png")) continue;
       for (const w of windows) {
         const cutoff = now - w.seconds * 1000;
         if (ts >= cutoff) {
@@ -151,13 +181,31 @@ async function getRates(): Promise<{
     continuationToken = res.NextContinuationToken;
   } while (continuationToken);
 
+  const newProducts = {
+    last24h: { count: 0, ratePerHour: 0 },
+    last1h: { count: 0, ratePerHour: 0 },
+    last10m: { count: 0, ratePerHour: 0 },
+    last60s: { count: 0, ratePerHour: 0 },
+  };
+
   for (const w of windows) {
     const { count } = result[w.name];
     result[w.name].ratePerHour =
       w.seconds > 0 ? Math.round(((count * 3600) / w.seconds) * 10) / 10 : count * 60;
   }
 
-  return result;
+  for (const w of windows) {
+    const cutoff = now - w.seconds * 1000;
+    let c = 0;
+    for (const minTs of prefixMinTime.values()) {
+      if (minTs >= cutoff) c++;
+    }
+    newProducts[w.name].count = c;
+    newProducts[w.name].ratePerHour =
+      w.seconds > 0 ? Math.round(((c * 3600) / w.seconds) * 10) / 10 : c * 60;
+  }
+
+  return { ...result, newProducts };
 }
 
 const HTML = `<!DOCTYPE html>
@@ -227,7 +275,7 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
     .nav { margin-bottom: 2rem; }
     .nav a { color: #8b9dc3; text-decoration: none; font-size: 0.9rem; }
     .nav a:hover { color: #a8b8e0; }
-    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; max-width: 560px; margin-bottom: 2.5rem; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1.25rem; max-width: 720px; margin-bottom: 2.5rem; }
     .stat { background: #1a1a1a; padding: 1.25rem; border-radius: 10px; text-align: center; border: 1px solid #252525; }
     .stat-value { font-size: 1.875rem; font-weight: 600; letter-spacing: -0.02em; }
     .stat-label { font-size: 0.7rem; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.35rem; }
@@ -242,6 +290,7 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
     .eta-at { font-size: 1.05rem; font-weight: 500; color: #a8b8d4; }
     .eta-note { font-size: 0.75rem; color: #5a5a5a; margin-top: 0.5rem; }
     .rates-section { margin-top: 2.5rem; }
+    .rates-section + .rates-section { margin-top: 2rem; }
     .rates-title { font-size: 0.85rem; font-weight: 600; color: #8b9dc3; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.06em; }
     .rates-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; max-width: 720px; }
     .rate-card { background: #1a1a1a; padding: 1rem; border-radius: 10px; border: 1px solid #252525; }
@@ -311,6 +360,7 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
         return;
       }
       var ratesHtml = '';
+      var np = rates && !rates.error && rates.newProducts ? rates.newProducts : null;
       if (rates && !rates.error) {
         ratesHtml = '<div class="rates-section">' +
           '<div class="rates-title">Backgrounds removed (recent activity)</div>' +
@@ -320,10 +370,23 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
           '<div class="rate-card"><div class="window">Last 10 mins</div><div class="count">' + rates.last10m.count + '</div><div class="rate">' + rates.last10m.ratePerHour + '/hr</div></div>' +
           '<div class="rate-card"><div class="window">Last 60 secs</div><div class="count">' + rates.last60s.count + '</div><div class="rate">' + rates.last60s.ratePerHour + '/hr</div></div>' +
           '</div></div>';
+        if (np) {
+          ratesHtml += '<div class="rates-section">' +
+            '<div class="rates-title">New products (inferred from R2)</div>' +
+            '<div class="rates-grid">' +
+            '<div class="rate-card"><div class="window">Last 24 hours</div><div class="count">' + np.last24h.count + '</div><div class="rate">' + np.last24h.ratePerHour + '/hr</div></div>' +
+            '<div class="rate-card"><div class="window">Last hour</div><div class="count">' + np.last1h.count + '</div><div class="rate">' + np.last1h.ratePerHour + '/hr</div></div>' +
+            '<div class="rate-card"><div class="window">Last 10 mins</div><div class="count">' + np.last10m.count + '</div><div class="rate">' + np.last10m.ratePerHour + '/hr</div></div>' +
+            '<div class="rate-card"><div class="window">Last 60 secs</div><div class="count">' + np.last60s.count + '</div><div class="rate">' + np.last60s.ratePerHour + '/hr</div></div>' +
+            '</div>' +
+            '<div class="eta-note" style="margin-top:0.75rem;max-width:720px">Based on oldest object time per product folder (min. LastModified).</div></div>';
+        }
       }
+      var totalProductsVal = typeof stats.totalProducts === 'number' ? stats.totalProducts.toLocaleString() : '—';
       document.getElementById('root').innerHTML =
         '<div class="stats">' +
         '<div class="stat"><div class="stat-value">' + stats.total.toLocaleString() + '</div><div class="stat-label">Total images</div></div>' +
+        '<div class="stat"><div class="stat-value">' + totalProductsVal + '</div><div class="stat-label">Total products</div></div>' +
         '<div class="stat"><div class="stat-value">' + stats.withNobg.toLocaleString() + '</div><div class="stat-label">With no-bg</div></div>' +
         '<div class="stat"><div class="stat-value">' + stats.remaining.toLocaleString() + '</div><div class="stat-label">Remaining</div></div>' +
         '</div>' +
