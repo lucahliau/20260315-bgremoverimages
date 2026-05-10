@@ -220,6 +220,8 @@ const SHARED_PAGE_CSS = `
       --link-hover: #9bb6e8;
       --radius: 8px;
       --font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --before-pct: 50%;
+      --shell-max: min(95vw, 1800px);
     }
     * { box-sizing: border-box; }
     body {
@@ -232,7 +234,30 @@ const SHARED_PAGE_CSS = `
       color: var(--text);
       -webkit-font-smoothing: antialiased;
     }
-    .shell { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem 3rem; }
+    body.resizing { cursor: col-resize !important; user-select: none; }
+    body.resizing img, body.resizing a { pointer-events: none; }
+    .shell { max-width: var(--shell-max); margin: 0 auto; padding: 0 1.5rem 3rem; }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0 1rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .toolbar .hint { color: var(--faint); }
+    .toolbar button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font: inherit;
+      font-size: 0.75rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .toolbar button:hover { border-color: var(--link); color: var(--link); }
+    .toolbar .ratio { font-variant-numeric: tabular-nums; min-width: 7ch; text-align: right; }
     .page-head {
       padding: 1.75rem 0 1.5rem;
       border-bottom: 1px solid var(--border);
@@ -256,8 +281,8 @@ const SHARED_PAGE_CSS = `
     .grid { display: grid; gap: 1.75rem; }
     .pair {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem 1.25rem;
+      grid-template-columns: calc(var(--before-pct) - 6px) 12px 1fr;
+      gap: 1rem 0;
       align-items: start;
       padding-bottom: 1.75rem;
       border-bottom: 1px solid var(--border);
@@ -270,6 +295,30 @@ const SHARED_PAGE_CSS = `
       font-weight: 500;
       color: var(--muted);
       letter-spacing: 0.02em;
+    }
+    .resizer {
+      cursor: col-resize;
+      position: relative;
+      align-self: stretch;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .resizer::before {
+      content: "";
+      position: absolute;
+      top: 1.5rem;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      background: var(--border);
+      border-radius: 1px;
+      transition: background 0.15s ease, width 0.15s ease;
+    }
+    .resizer:hover::before, .resizer.dragging::before {
+      background: var(--link);
+      width: 3px;
     }
     .col { text-align: center; }
     .col label {
@@ -311,13 +360,72 @@ const HTML = `<!DOCTYPE html>
       <div class="row">
         <div>
           <h1>Before / after</h1>
-          <p class="sub">Original and background-removed images from R2</p>
+          <p class="sub">Original and background-removed images from R2 · Drag the divider between columns to resize · Double-click to reset</p>
         </div>
         <nav class="nav"><a href="/">Dashboard</a></nav>
       </div>
     </header>
+    <div class="toolbar">
+      <span class="hint">Split:</span>
+      <span class="ratio" id="ratio">50% / 50%</span>
+      <button type="button" id="reset-split">Reset</button>
+    </div>
     <div id="root" class="loading">Loading from R2…</div>
   <script>
+    (function() {
+      var KEY = 'bgr.beforePct';
+      var MIN = 15, MAX = 85;
+      var ratioEl = document.getElementById('ratio');
+      function updateLabel(pct) {
+        var b = Math.round(pct);
+        if (ratioEl) ratioEl.textContent = b + '% / ' + (100 - b) + '%';
+      }
+      function setPct(pct, persist) {
+        if (pct < MIN) pct = MIN;
+        if (pct > MAX) pct = MAX;
+        document.documentElement.style.setProperty('--before-pct', pct + '%');
+        updateLabel(pct);
+        if (persist) localStorage.setItem(KEY, pct.toFixed(2));
+      }
+      var saved = parseFloat(localStorage.getItem(KEY));
+      setPct(!isNaN(saved) ? saved : 50, false);
+
+      var dragging = null;
+      document.addEventListener('pointerdown', function(e) {
+        var r = e.target && e.target.closest && e.target.closest('.resizer');
+        if (!r) return;
+        var pair = r.closest('.pair');
+        if (!pair) return;
+        dragging = { resizer: r, pair: pair };
+        r.classList.add('dragging');
+        document.body.classList.add('resizing');
+        if (r.setPointerCapture) { try { r.setPointerCapture(e.pointerId); } catch (_) {} }
+        e.preventDefault();
+      });
+      document.addEventListener('pointermove', function(e) {
+        if (!dragging) return;
+        var rect = dragging.pair.getBoundingClientRect();
+        if (rect.width <= 0) return;
+        var pct = ((e.clientX - rect.left) / rect.width) * 100;
+        setPct(pct, true);
+      });
+      function endDrag() {
+        if (!dragging) return;
+        dragging.resizer.classList.remove('dragging');
+        document.body.classList.remove('resizing');
+        dragging = null;
+      }
+      document.addEventListener('pointerup', endDrag);
+      document.addEventListener('pointercancel', endDrag);
+      document.addEventListener('dblclick', function(e) {
+        var r = e.target && e.target.closest && e.target.closest('.resizer');
+        if (!r) return;
+        setPct(50, true);
+      });
+      var resetBtn = document.getElementById('reset-split');
+      if (resetBtn) resetBtn.addEventListener('click', function() { setPct(50, true); });
+    })();
+
     fetch('/api/pairs')
       .then(r => r.json())
       .then(pairs => {
@@ -332,6 +440,7 @@ const HTML = `<!DOCTYPE html>
         document.getElementById('root').innerHTML = '<div class="grid">' + pairs.map(p =>
           '<div class="pair"><h2>' + p.name + '</h2>' +
           '<div class="col"><label>Before</label><img src="' + p.before + '" alt="Before" loading="lazy" onerror="this.alt=\\'Failed to load\\'"></div>' +
+          '<div class="resizer" role="separator" aria-orientation="vertical" aria-label="Resize columns" title="Drag to resize · double-click to reset"></div>' +
           '<div class="col after"><label>After</label><img src="' + p.after + '" alt="After" loading="lazy" onerror="this.alt=\\'Failed to load\\'"></div></div>'
         ).join('') + '</div>';
       })
