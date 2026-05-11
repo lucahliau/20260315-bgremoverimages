@@ -25,6 +25,46 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
+
+# psycopg2 / libpq accept a strict set of query params. Anything else
+# (e.g. ?pgbouncer=true added by Prisma for Supabase) raises
+# "invalid URI query parameter".
+LIBPQ_QUERY_PARAMS = {
+    "sslmode",
+    "sslrootcert",
+    "sslcert",
+    "sslkey",
+    "sslpassword",
+    "sslcrl",
+    "connect_timeout",
+    "application_name",
+    "options",
+    "fallback_application_name",
+    "keepalives",
+    "keepalives_idle",
+    "keepalives_interval",
+    "keepalives_count",
+    "tcp_user_timeout",
+    "replication",
+    "gssencmode",
+    "target_session_attrs",
+    "service",
+    "passfile",
+    "channel_binding",
+}
+
+
+def sanitize_db_url_for_psycopg2(url: str) -> str:
+    """Drop query params that libpq doesn't recognise (e.g. pgbouncer=true).
+
+    Returns the URL with only libpq-known params kept.
+    """
+    parts = urlsplit(url)
+    if not parts.query:
+        return url
+    kept = [(k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True) if k in LIBPQ_QUERY_PARAMS]
+    return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(kept), parts.fragment))
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROGRESS_FILE = SCRIPT_DIR / "embed-progress.json"
@@ -250,7 +290,10 @@ def main() -> None:
         print("Install psycopg2-binary: pip install psycopg2-binary", file=sys.stderr)
         sys.exit(1)
 
-    conn = psycopg2.connect(db_url)
+    safe_db_url = sanitize_db_url_for_psycopg2(db_url)
+    if safe_db_url != db_url:
+        log_line("DATABASE_URL had non-libpq query params; sanitized for psycopg2.", lock=log_lock)
+    conn = psycopg2.connect(safe_db_url)
     conn.autocommit = False
     try:
         from pgvector.psycopg2 import register_vector

@@ -27,13 +27,54 @@ function parseEmbedModel(url: string | undefined): string {
   return DEFAULT_EMBED_MODEL;
 }
 
+/** Query params node-postgres / libpq actually understands. Strip the rest
+ *  (notably Prisma's `pgbouncer=true` on Supabase URLs). */
+const LIBPQ_QUERY_PARAMS = new Set([
+  "sslmode",
+  "sslrootcert",
+  "sslcert",
+  "sslkey",
+  "sslpassword",
+  "sslcrl",
+  "connect_timeout",
+  "application_name",
+  "options",
+  "fallback_application_name",
+  "keepalives",
+  "keepalives_idle",
+  "keepalives_interval",
+  "keepalives_count",
+  "tcp_user_timeout",
+  "replication",
+  "gssencmode",
+  "target_session_attrs",
+  "service",
+  "passfile",
+  "channel_binding",
+]);
+
+function sanitizeDbUrl(raw: string): string {
+  const qIdx = raw.indexOf("?");
+  if (qIdx < 0) return raw;
+  const base = raw.slice(0, qIdx);
+  const tail = raw.slice(qIdx + 1);
+  const kept: string[] = [];
+  for (const part of tail.split("&")) {
+    if (!part) continue;
+    const eq = part.indexOf("=");
+    const key = eq >= 0 ? part.slice(0, eq) : part;
+    if (LIBPQ_QUERY_PARAMS.has(key)) kept.push(part);
+  }
+  return kept.length > 0 ? `${base}?${kept.join("&")}` : base;
+}
+
 let embedPool: pg.Pool | null = null;
 
 function getEmbedPool(): pg.Pool | null {
-  const conn = process.env.DATABASE_URL?.trim();
-  if (!conn) return null;
+  const raw = process.env.DATABASE_URL?.trim();
+  if (!raw) return null;
   if (!embedPool) {
-    embedPool = new pg.Pool({ connectionString: conn, max: 4 });
+    embedPool = new pg.Pool({ connectionString: sanitizeDbUrl(raw), max: 4 });
   }
   return embedPool;
 }
