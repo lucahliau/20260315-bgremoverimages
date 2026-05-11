@@ -5,7 +5,38 @@
 
 import { createServer } from "http";
 import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import * as fs from "fs";
 import * as path from "path";
+import pg from "pg";
+
+const EMBED_HISTORY_FILE = path.join(__dirname, "embed-history.jsonl");
+
+/** Known embedding model ids (must match embed_worker.py MODEL_REGISTRY). */
+const EMBED_MODELS = ["clip-vit-b-32-image"] as const;
+const DEFAULT_EMBED_MODEL = EMBED_MODELS[0];
+
+function requestPathname(url: string | undefined): string {
+  const u = url ?? "/";
+  return u.split("?")[0] || "/";
+}
+
+function parseEmbedModel(url: string | undefined): string {
+  const q = url?.includes("?") ? url.slice(url.indexOf("?") + 1) : "";
+  const m = new URLSearchParams(q).get("model")?.trim();
+  if (m && EMBED_MODELS.includes(m as (typeof EMBED_MODELS)[number])) return m;
+  return DEFAULT_EMBED_MODEL;
+}
+
+let embedPool: pg.Pool | null = null;
+
+function getEmbedPool(): pg.Pool | null {
+  const conn = process.env.DATABASE_URL?.trim();
+  if (!conn) return null;
+  if (!embedPool) {
+    embedPool = new pg.Pool({ connectionString: conn, max: 4 });
+  }
+  return embedPool;
+}
 
 for (const k of ["R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET_NAME", "R2_PUBLIC_URL"]) {
   if (!process.env[k]) {
@@ -206,6 +237,119 @@ async function getRates(): Promise<{
   }
 
   return { ...result, newProducts };
+}
+
+function emptyRateWindows(): {
+  last24h: RateWindow;
+  last1h: RateWindow;
+  last10m: RateWindow;
+  last60s: RateWindow;
+} {
+  return {
+    last24h: { count: 0, ratePerHour: 0 },
+    last1h: { count: 0, ratePerHour: 0 },
+    last10m: { count: 0, ratePerHour: 0 },
+    last60s: { count: 0, ratePerHour: 0 },
+  };
+}
+
+/** Success events from embed-history.jsonl for dashboard throughput / ETA. */
+function getEmbedRatesFromJsonl(model: string): {
+  last24h: RateWindow;
+  last1h: RateWindow;
+  last10m: RateWindow;
+  last60s: RateWindow;
+} {
+  const result = emptyRateWindows();
+  if (!fs.existsSync(EMBED_HISTORY_FILE)) return result;
+
+  const windows = [
+    { name: "last24h" as const, seconds: 24 * 3600 },
+    { name: "last1h" as const, seconds: 3600 },
+    { name: "last10m" as const, seconds: 10 * 60 },
+    { name: "last60s" as const, seconds: 60 },
+  ];
+
+  let tail: string;
+  try {
+    const st = fs.statSync(EMBED_HISTORY_FILE);
+    const readSize = Math.min(4 * 1024 * 1024, st.size);
+    const fd = fs.openSync(EMBED_HISTORY_FILE, "r");
+    const buf = Buffer.alloc(readSize);
+    fs.readSync(fd, buf, 0, readSize, Math.max(0, st.size - readSize));
+    fs.closeSync(fd);
+    tail = buf.toString("utf8");
+  } catch {
+    return result;
+  }
+
+  const now = Date.now();
+  const lines = tail.split("\n");
+  for (const line of lines) {
+    const s = line.trim();
+    if (!s) continue;
+    let rec: { model?: string; status?: string; ts?: string };
+    try {
+      rec = JSON.parse(s) as { model?: string; status?: string; ts?: string };
+    } catch {
+      continue;
+    }
+    if (rec.model !== model || rec.status !== "success" || !rec.ts) continue;
+    const ts = Date.parse(rec.ts);
+    if (Number.isNaN(ts)) continue;
+    for (const w of windows) {
+      if (ts >= now - w.seconds * 1000) {
+        result[w.name].count++;
+      }
+    }
+  }
+
+  for (const w of windows) {
+    const { count } = result[w.name];
+    result[w.name].ratePerHour =
+      w.seconds > 0 ? Math.round(((count * 3600) / w.seconds) * 10) / 10 : count * 60;
+  }
+
+  return result;
+}
+
+async function getEmbedStats(model: string): Promise<{
+  total: number;
+  embedded: number;
+  remaining: number;
+  percent: number;
+  model: string;
+  error?: string;
+}> {
+  const pool = getEmbedPool();
+  if (!pool) {
+    return {
+      total: 0,
+      embedded: 0,
+      remaining: 0,
+      percent: 0,
+      model,
+      error: "DATABASE_URL not set",
+    };
+  }
+
+  const r1 = await pool.query<{ c: string }>(
+    `SELECT COUNT(*)::text AS c FROM "ClothingItem" WHERE active = true AND "hasNobg" = true`
+  );
+  const total = Number(r1.rows[0]?.c ?? 0);
+
+  const r2 = await pool.query<{ c: string }>(
+    `SELECT COUNT(*)::text AS c
+     FROM "ItemEmbedding" ie
+     INNER JOIN "ClothingItem" ci ON ci.id = ie."itemId"
+     WHERE ie.model = $1 AND ci.active = true AND ci."hasNobg" = true`,
+    [model]
+  );
+  const embedded = Number(r2.rows[0]?.c ?? 0);
+  const remaining = Math.max(0, total - embedded);
+  const percent = total > 0 ? Math.round((embedded / total) * 1000) / 10 : 0;
+
+  return { total, embedded, remaining, percent, model };
 }
 
 const SHARED_PAGE_CSS = `
@@ -629,6 +773,34 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
     }
     .loading { color: var(--muted); font-size: 0.875rem; }
     .error { color: #d96b6b; font-size: 0.875rem; }
+    .embed-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem 1rem;
+      margin-top: 1.1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    .embed-toolbar label {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .embed-toolbar select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font: inherit;
+      font-size: 0.8125rem;
+      padding: 0.35rem 0.6rem;
+      border-radius: 6px;
+      min-width: 14rem;
+    }
+    .progress-fill.embed {
+      background: #3d7a9f;
+      box-shadow: 0 0 12px rgba(61, 122, 159, 0.35);
+    }
+    code { font-size: 0.72rem; background: var(--bg); padding: 0.1em 0.35em; border-radius: 4px; }
   </style>
 </head>
 <body>
@@ -636,10 +808,16 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
     <header class="page-head">
       <div class="row">
         <div>
-          <h1>Background removal</h1>
-          <p class="sub">Progress across images in R2 · Refreshes every 5s</p>
+          <h1>Background removal &amp; embeddings</h1>
+          <p class="sub">R2 no-bg progress + Postgres / pgvector embedding job · Refreshes every 5s</p>
         </div>
         <nav class="nav"><a href="/images">Before / after</a></nav>
+      </div>
+      <div class="embed-toolbar">
+        <label for="embed-model">Embedding model (dashboard)</label>
+        <select id="embed-model" aria-label="Embedding model">
+          <option value="clip-vit-b-32-image">clip-vit-b-32-image (CLIP ViT-B/32)</option>
+        </select>
       </div>
     </header>
     <div id="root" class="loading">Loading…</div>
@@ -692,11 +870,50 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
         '<div class="eta-value eta-at">' + formatCompletionAt(etaSec) + '</div>' +
         '<div class="eta-note">' + rem.toLocaleString() + ' remaining at ' + c60 + ' / 60s</div></div>';
     }
-    function render(stats, rates) {
-      if (stats.error) {
-        document.getElementById('root').innerHTML = '<p class="error">' + stats.error + '</p>';
-        return;
+    function embedEtaBlock(stats, rates) {
+      var rem = stats.remaining;
+      if (rem <= 0) {
+        return '<div class="panel">' +
+          '<div class="eta-label">Time remaining (60s rate)</div>' +
+          '<div class="eta-value">' + formatEtaHms(0) + '</div>' +
+          '<div class="eta-label">Completion time</div>' +
+          '<div class="eta-value eta-at">—</div>' +
+          '<div class="eta-note">All eligible items embedded for this model</div></div>';
       }
+      if (!rates || !rates.last60s) {
+        return '<div class="panel">' +
+          '<div class="eta-label">Time remaining (60s rate)</div>' +
+          '<div class="eta-value">—</div>' +
+          '<div class="eta-label">Completion time</div>' +
+          '<div class="eta-value eta-at">—</div>' +
+          '<div class="eta-note">Rates unavailable</div></div>';
+      }
+      var c60e = rates.last60s.count;
+      if (c60e <= 0) {
+        return '<div class="panel">' +
+          '<div class="eta-label">Time remaining (60s rate)</div>' +
+          '<div class="eta-value">—</div>' +
+          '<div class="eta-label">Completion time</div>' +
+          '<div class="eta-value eta-at">—</div>' +
+          '<div class="eta-note">No embedding successes logged in the last 60s</div></div>';
+      }
+      var etaSecE = Math.ceil(rem * 60 / c60e);
+      return '<div class="panel">' +
+        '<div class="eta-label">Time remaining (60s rate)</div>' +
+        '<div class="eta-value">' + formatEtaHms(etaSecE) + '</div>' +
+        '<div class="eta-label">Completion time</div>' +
+        '<div class="eta-value eta-at">' + formatCompletionAt(etaSecE) + '</div>' +
+        '<div class="eta-note">' + rem.toLocaleString() + ' remaining at ' + c60e + ' successes / 60s</div></div>';
+    }
+    function embedModel() {
+      var el = document.getElementById('embed-model');
+      return el && el.value ? el.value : 'clip-vit-b-32-image';
+    }
+    function render(stats, rates, eStats, eRates) {
+      var nobgHtml = '';
+      if (stats.error) {
+        nobgHtml = '<p class="error">' + stats.error + '</p>';
+      } else {
       var ratesHtml = '';
       var np = rates && !rates.error && rates.newProducts ? rates.newProducts : null;
       if (rates && !rates.error) {
@@ -721,33 +938,75 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
         }
       }
       var totalProductsVal = typeof stats.totalProducts === 'number' ? stats.totalProducts.toLocaleString() : '—';
-      document.getElementById('root').innerHTML =
-        '<div class="stack">' +
-        '<div><p class="section-label">Overview</p><div class="kpi-row">' +
+      nobgHtml =
+        '<div><p class="section-label">R2 · Overview</p><div class="kpi-row">' +
         '<div class="stat"><div class="stat-value">' + stats.total.toLocaleString() + '</div><div class="stat-label">Total images</div></div>' +
         '<div class="stat"><div class="stat-value">' + totalProductsVal + '</div><div class="stat-label">Products</div></div>' +
         '<div class="stat"><div class="stat-value">' + stats.withNobg.toLocaleString() + '</div><div class="stat-label">With no-bg</div></div>' +
         '<div class="stat"><div class="stat-value">' + stats.remaining.toLocaleString() + '</div><div class="stat-label">Remaining</div></div>' +
         '</div></div>' +
         '<div class="panel panel--progress">' +
-        '<p class="section-label">Progress</p>' +
+        '<p class="section-label">R2 · Progress</p>' +
         '<div class="percent-value">' + stats.percent + '%</div>' +
         '<div class="progress-bar"><div class="progress-fill" style="width:' + stats.percent + '%"></div></div>' +
         '</div>' +
-        '<div><p class="section-label">ETA</p>' + etaBlock(stats, rates) + '</div>' +
-        ratesHtml +
-        '</div>';
+        '<div><p class="section-label">R2 · ETA</p>' + etaBlock(stats, rates) + '</div>' +
+        ratesHtml;
+      }
+      var embedHtml = '';
+      if (!eStats) eStats = { error: 'No embed stats response', total: 0, embedded: 0, remaining: 0, percent: 0, model: '' };
+      if (!eRates) eRates = {};
+      if (eStats.error) {
+        embedHtml = '<div><p class="section-label">Embeddings (Postgres)</p>' +
+          '<p class="error">' + eStats.error + '</p>' +
+          '<p class="footnote">Set <code>DATABASE_URL</code> in <code>.env</code> next to this server. Run <code>npm run embed</code> or <code>python3 embed_worker.py</code> after <code>npm run embed:setup</code> and applying the backend pgvector migration.</p></div>';
+      } else {
+        var eRatesHtml = '';
+        if (eRates && eRates.last24h && !eRates.error) {
+          eRatesHtml = '<div class="rates-block">' +
+            '<p class="section-label">Embedding throughput (successes)</p>' +
+            '<div class="rates-grid">' +
+            '<div class="rate-card"><div class="window">Last 24 hours</div><div class="count">' + eRates.last24h.count + '</div><div class="rate">' + eRates.last24h.ratePerHour + '/hr</div></div>' +
+            '<div class="rate-card"><div class="window">Last hour</div><div class="count">' + eRates.last1h.count + '</div><div class="rate">' + eRates.last1h.ratePerHour + '/hr</div></div>' +
+            '<div class="rate-card"><div class="window">Last 10 mins</div><div class="count">' + eRates.last10m.count + '</div><div class="rate">' + eRates.last10m.ratePerHour + '/hr</div></div>' +
+            '<div class="rate-card"><div class="window">Last 60 secs</div><div class="count">' + eRates.last60s.count + '</div><div class="rate">' + eRates.last60s.ratePerHour + '/hr</div></div>' +
+            '</div>' +
+            '<p class="footnote">From <code>embed-history.jsonl</code> (tail). Resumable: rows already in <code>ItemEmbedding</code> are skipped.</p></div>';
+        }
+        embedHtml = '<div><p class="section-label">Embeddings · model <span style="color:var(--text);text-transform:none;letter-spacing:0">' + (eStats.model || '') + '</span></p><div class="kpi-row">' +
+          '<div class="stat"><div class="stat-value">' + eStats.total.toLocaleString() + '</div><div class="stat-label">Eligible in DB</div></div>' +
+          '<div class="stat"><div class="stat-value">' + eStats.embedded.toLocaleString() + '</div><div class="stat-label">Embedded</div></div>' +
+          '<div class="stat"><div class="stat-value">' + eStats.remaining.toLocaleString() + '</div><div class="stat-label">Remaining</div></div>' +
+          '<div class="stat"><div class="stat-value">' + eStats.percent + '%</div><div class="stat-label">Progress</div></div>' +
+          '</div></div>' +
+          '<div class="panel panel--progress">' +
+          '<p class="section-label">Embedding progress</p>' +
+          '<div class="percent-value">' + eStats.percent + '%</div>' +
+          '<div class="progress-bar"><div class="progress-fill embed" style="width:' + eStats.percent + '%"></div></div>' +
+          '</div>' +
+          '<div><p class="section-label">Embedding ETA</p>' + embedEtaBlock(eStats, eRates) + '</div>' +
+          eRatesHtml +
+          '</div>';
+      }
+      document.getElementById('root').innerHTML = '<div class="stack">' + nobgHtml + embedHtml + '</div>';
     }
     function poll() {
-      Promise.all([fetch('/api/stats').then(r => r.json()), fetch('/api/rates').then(r => r.json())])
-        .then(([stats, rates]) => {
-          render(stats, rates);
+      var m = embedModel();
+      Promise.all([
+        fetch('/api/stats').then(r => r.json()),
+        fetch('/api/rates').then(r => r.json()),
+        fetch('/api/embed-stats?model=' + encodeURIComponent(m)).then(r => r.json()),
+        fetch('/api/embed-rates?model=' + encodeURIComponent(m)).then(r => r.json()),
+      ])
+        .then(([stats, rates, eStats, eRates]) => {
+          render(stats, rates, eStats, eRates);
           document.getElementById('updated').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
         })
         .catch(e => {
           document.getElementById('root').innerHTML = '<p class="error">' + e.message + '</p>';
         });
     }
+    document.getElementById('embed-model').addEventListener('change', function() { poll(); });
     poll();
     setInterval(poll, 5000);
   </script>
@@ -755,7 +1014,9 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
 </html>`;
 
 const server = createServer(async (req, res) => {
-  if (req.url === "/api/pairs") {
+  const pathname = requestPathname(req.url);
+
+  if (pathname === "/api/pairs") {
     try {
       const pairs = await getPairs();
       res.setHeader("Content-Type", "application/json");
@@ -769,7 +1030,7 @@ const server = createServer(async (req, res) => {
     }
     return;
   }
-  if (req.url === "/api/stats") {
+  if (pathname === "/api/stats") {
     try {
       const stats = await getStats();
       res.setHeader("Content-Type", "application/json");
@@ -783,7 +1044,7 @@ const server = createServer(async (req, res) => {
     }
     return;
   }
-  if (req.url === "/api/rates") {
+  if (pathname === "/api/rates") {
     try {
       const rates = await getRates();
       res.setHeader("Content-Type", "application/json");
@@ -797,12 +1058,50 @@ const server = createServer(async (req, res) => {
     }
     return;
   }
-  if (req.url === "/" || req.url === "/index.html") {
+  if (pathname === "/api/embed-models") {
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.end(JSON.stringify({ models: [...EMBED_MODELS] }));
+    return;
+  }
+  if (pathname === "/api/embed-stats") {
+    const model = parseEmbedModel(req.url);
+    try {
+      const stats = await getEmbedStats(model);
+      res.setHeader("Content-Type", "application/json");
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.end(JSON.stringify(stats));
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      res.statusCode = 500;
+      res.setHeader("Content-Type", "application/json");
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.end(JSON.stringify({ error: msg, total: 0, embedded: 0, remaining: 0, percent: 0, model }));
+    }
+    return;
+  }
+  if (pathname === "/api/embed-rates") {
+    try {
+      const model = parseEmbedModel(req.url);
+      const rates = getEmbedRatesFromJsonl(model);
+      res.setHeader("Content-Type", "application/json");
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.end(JSON.stringify(rates));
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      res.statusCode = 500;
+      res.setHeader("Content-Type", "application/json");
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.end(JSON.stringify({ error: msg }));
+    }
+    return;
+  }
+  if (pathname === "/" || pathname === "/index.html") {
     res.setHeader("Content-Type", "text/html");
     res.end(DASHBOARD_HTML);
     return;
   }
-  if (req.url === "/images") {
+  if (pathname === "/images") {
     res.setHeader("Content-Type", "text/html");
     res.end(HTML);
     return;
