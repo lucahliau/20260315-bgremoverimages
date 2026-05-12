@@ -515,7 +515,7 @@ def main() -> None:
                 ready[idx] = ReadyRow(item_id=outcome.item_id, image=outcome.image)
 
                 # Per-N progress so the user sees life
-                if done_now <= 5 or done_now % 25 == 0:
+                if done_now <= 5 or done_now % 5 == 0 or done_now == n_total:
                     log_line(
                         f"download ok [{done_now}/{n_total}] {outcome.item_id} "
                         f"{outcome.bytes_downloaded // 1024}KB in {outcome.elapsed_ms}ms",
@@ -538,10 +538,14 @@ def main() -> None:
                 break
             continue
 
-        all_embeddings: list[tuple[str, Any]] = []
+        # Encode + commit per encode-batch so we don't lose a whole chunk
+        # if the process is interrupted mid-encode (e.g., laptop sleeps).
+        chunk_total_encoded = 0
+        chunk_total_inserted = 0
         for b in range(0, len(to_encode), args.batch_size):
             batch = to_encode[b : b + args.batch_size]
             pil_list = [r.image for r in batch]
+            t_enc = time.monotonic()
             vecs = model_st.encode(
                 pil_list,
                 batch_size=len(pil_list),
@@ -549,27 +553,42 @@ def main() -> None:
                 normalize_embeddings=True,
                 show_progress_bar=False,
             )
+            enc_ms = int((time.monotonic() - t_enc) * 1000)
+
+            batch_rows: list[tuple[str, Any]] = []
             for i, row in enumerate(batch):
                 vec = np.asarray(vecs[i], dtype=np.float32).reshape(-1)
                 if vec.shape[0] != dim:
                     log_line(f"dim mismatch {row.item_id}: got {vec.shape[0]} expected {dim}", lock=log_lock)
                     continue
-                all_embeddings.append((row.item_id, vec))
+                batch_rows.append((row.item_id, vec))
 
-        inserted_ids = insert_embeddings(conn, args.model, dim, all_embeddings)
+            t_db = time.monotonic()
+            inserted_ids = insert_embeddings(conn, args.model, dim, batch_rows)
+            db_ms = int((time.monotonic() - t_db) * 1000)
 
-        now_ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-        with progress_lock:
-            for item_id in inserted_ids:
-                completed_ids.add(item_id)
-                append_history(
-                    {"itemId": item_id, "model": args.model, "status": "success", "ts": now_ts}
-                )
-            save_progress(completed_ids, failed_ids, progress_lock)
+            chunk_total_encoded += len(batch_rows)
+            chunk_total_inserted += len(inserted_ids)
+
+            now_ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+            with progress_lock:
+                for item_id in inserted_ids:
+                    completed_ids.add(item_id)
+                    append_history(
+                        {"itemId": item_id, "model": args.model, "status": "success", "ts": now_ts}
+                    )
+                save_progress(completed_ids, failed_ids, progress_lock)
+
+            log_line(
+                f"encode batch [{b // args.batch_size + 1}] size={len(batch)} "
+                f"encoded_ok={len(batch_rows)} inserted={len(inserted_ids)} "
+                f"encode={enc_ms}ms db={db_ms}ms",
+                lock=log_lock,
+            )
 
         processed_this_run += len(work)
         log_line(
-            f"Chunk done: encoded {len(all_embeddings)} inserted={len(inserted_ids)} "
+            f"Chunk done: encoded {chunk_total_encoded} inserted={chunk_total_inserted} "
             f"run_rows_fetched={processed_this_run}",
             lock=log_lock,
         )
