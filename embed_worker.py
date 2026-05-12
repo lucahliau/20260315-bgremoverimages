@@ -385,6 +385,31 @@ def main() -> None:
     log_line(f"Loading SentenceTransformer({st_name!r}) on {device!r}…", lock=log_lock)
     model_st = SentenceTransformer(st_name, device=device)
 
+    # Warm up MPS kernels with a dummy image so the first real encode in
+    # the chunk loop doesn't appear to hang for 60-90s while Metal JITs.
+    try:
+        from PIL import Image as _PILImage
+
+        log_line(
+            f"Warming up {device.upper()} kernels (first encode JIT-compiles, ~30-90s on cold MPS)…",
+            lock=log_lock,
+        )
+        t_warm = time.monotonic()
+        _dummy = _PILImage.new("RGB", (224, 224), color=(128, 128, 128))
+        model_st.encode(
+            [_dummy],
+            batch_size=1,
+            convert_to_numpy=True,
+            normalize_embeddings=True,
+            show_progress_bar=False,
+        )
+        log_line(
+            f"Warmup done in {int((time.monotonic() - t_warm) * 1000)}ms; subsequent batches will be fast.",
+            lock=log_lock,
+        )
+    except Exception as e:
+        log_line(f"Warmup skipped ({e}); first chunk may take longer.", lock=log_lock)
+
     stop_requested = threading.Event()
     sigint_count = {"n": 0}
 
@@ -542,8 +567,19 @@ def main() -> None:
         # if the process is interrupted mid-encode (e.g., laptop sleeps).
         chunk_total_encoded = 0
         chunk_total_inserted = 0
+        n_encode_batches = (len(to_encode) + args.batch_size - 1) // args.batch_size
+        log_line(
+            f"Encoding {len(to_encode)} images on device={device} "
+            f"({n_encode_batches} batch(es) of up to {args.batch_size})…",
+            lock=log_lock,
+        )
         for b in range(0, len(to_encode), args.batch_size):
+            batch_idx = b // args.batch_size + 1
             batch = to_encode[b : b + args.batch_size]
+            log_line(
+                f"  encode batch [{batch_idx}/{n_encode_batches}] starting size={len(batch)}…",
+                lock=log_lock,
+            )
             pil_list = [r.image for r in batch]
             t_enc = time.monotonic()
             vecs = model_st.encode(
@@ -580,7 +616,7 @@ def main() -> None:
                 save_progress(completed_ids, failed_ids, progress_lock)
 
             log_line(
-                f"encode batch [{b // args.batch_size + 1}] size={len(batch)} "
+                f"  encode batch [{batch_idx}/{n_encode_batches}] done size={len(batch)} "
                 f"encoded_ok={len(batch_rows)} inserted={len(inserted_ids)} "
                 f"encode={enc_ms}ms db={db_ms}ms",
                 lock=log_lock,
