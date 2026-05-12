@@ -189,15 +189,23 @@ class DownloadOutcome:
     item_id: str
     image: Any = None  # PIL.Image when ok
     error: str | None = None
+    bytes_downloaded: int = 0
+    elapsed_ms: int = 0
 
 
 def download_one(
     item_id: str,
     image_url: str,
     r2_base: str,
-    timeout: int = 120,
+    connect_timeout: float = 10.0,
+    read_timeout: float = 30.0,
+    max_bytes: int = 25 * 1024 * 1024,
 ) -> DownloadOutcome:
-    """Download -nobg.png and return PIL Image or error."""
+    """Download -nobg.png and return PIL Image or error.
+
+    Uses a strict connect+read timeout so hung connections fail fast
+    rather than blocking the whole chunk.
+    """
     try:
         import requests
         from PIL import Image
@@ -209,14 +217,35 @@ def download_one(
     if not nobg:
         return DownloadOutcome(item_id=item_id, error="no_nobg_path")
 
+    started = time.monotonic()
     try:
-        r = requests.get(nobg, timeout=timeout, stream=True)
-        r.raise_for_status()
-        data = r.content
+        with requests.get(nobg, timeout=(connect_timeout, read_timeout), stream=True) as r:
+            r.raise_for_status()
+            buf = bytearray()
+            for chunk in r.iter_content(chunk_size=64 * 1024):
+                if not chunk:
+                    continue
+                buf.extend(chunk)
+                if len(buf) > max_bytes:
+                    return DownloadOutcome(
+                        item_id=item_id,
+                        error=f"oversized: {len(buf)} > {max_bytes}",
+                        elapsed_ms=int((time.monotonic() - started) * 1000),
+                    )
+            data = bytes(buf)
         img = Image.open(BytesIO(data)).convert("RGB")
-        return DownloadOutcome(item_id=item_id, image=img)
+        return DownloadOutcome(
+            item_id=item_id,
+            image=img,
+            bytes_downloaded=len(data),
+            elapsed_ms=int((time.monotonic() - started) * 1000),
+        )
     except Exception as e:
-        return DownloadOutcome(item_id=item_id, error=str(e))
+        return DownloadOutcome(
+            item_id=item_id,
+            error=str(e),
+            elapsed_ms=int((time.monotonic() - started) * 1000),
+        )
 
 
 @dataclass
@@ -256,8 +285,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Embed clothing -nobg images into Postgres (pgvector)")
     parser.add_argument("--model", default="clip-vit-b-32-image", choices=list(MODEL_REGISTRY.keys()))
     parser.add_argument("--batch-size", type=int, default=32, help="CLIP encode batch size")
-    parser.add_argument("--download-workers", type=int, default=12, help="Parallel HTTP downloads")
-    parser.add_argument("--work-chunk", type=int, default=256, help="Rows to fetch from DB per outer iteration")
+    parser.add_argument("--download-workers", type=int, default=8, help="Parallel HTTP downloads (R2 public URL is rate-limited per IP)")
+    parser.add_argument("--work-chunk", type=int, default=64, help="Rows to fetch from DB per outer iteration (smaller = faster feedback)")
     parser.add_argument("--limit", type=int, default=0, help="Max items to process this run (0 = unlimited)")
     parser.add_argument("--dry-run", action="store_true", help="Only print how many rows need work, then exit")
     parser.add_argument("--device", default="mps", choices=["mps", "cpu", "cuda"])
@@ -357,10 +386,20 @@ def main() -> None:
     model_st = SentenceTransformer(st_name, device=device)
 
     stop_requested = threading.Event()
+    sigint_count = {"n": 0}
 
     def on_sigint(_sig: int, _frame: Any) -> None:
-        log_line("SIGINT — will finish current batch then exit.", lock=log_lock)
-        stop_requested.set()
+        sigint_count["n"] += 1
+        if sigint_count["n"] == 1:
+            log_line(
+                "SIGINT received — cancelling pending downloads. "
+                "Press Ctrl+C again to force-exit immediately.",
+                lock=log_lock,
+            )
+            stop_requested.set()
+        else:
+            log_line("Second SIGINT — force exiting.", lock=log_lock)
+            os._exit(130)
 
     signal.signal(signal.SIGINT, on_sigint)
 
@@ -384,16 +423,50 @@ def main() -> None:
 
         log_line(f"Fetched {len(work)} rows from DB", lock=log_lock)
 
-        # Parallel download
         ready: list[ReadyRow | None] = [None] * len(work)
         id_to_index = {work[i][0]: i for i in range(len(work))}
 
-        with ThreadPoolExecutor(max_workers=args.download_workers) as ex:
+        chunk_started = time.monotonic()
+        n_total = len(work)
+        n_done = 0
+        n_ok = 0
+        n_failed = 0
+        sum_bytes = 0
+        sum_ms = 0
+        chunk_lock = threading.Lock()
+        heartbeat_stop = threading.Event()
+
+        def heartbeat() -> None:
+            while not heartbeat_stop.wait(15.0):
+                with chunk_lock:
+                    in_flight = n_total - n_done
+                    elapsed = time.monotonic() - chunk_started
+                    avg_ms = (sum_ms / n_ok) if n_ok else 0
+                    rate = (n_ok / elapsed) if elapsed > 0 else 0
+                    mb = sum_bytes / (1024 * 1024)
+                log_line(
+                    f"download heartbeat: done={n_done}/{n_total} ok={n_ok} failed={n_failed} "
+                    f"in_flight={in_flight} ~{rate:.1f} ok/s avg={avg_ms:.0f}ms total={mb:.1f}MB",
+                    lock=log_lock,
+                )
+
+        hb_thread = threading.Thread(target=heartbeat, daemon=True)
+        hb_thread.start()
+
+        ex = ThreadPoolExecutor(max_workers=args.download_workers)
+        try:
             futures = {
                 ex.submit(download_one, item_id, image_url, r2_base): item_id
                 for item_id, image_url in work
             }
             for fut in as_completed(futures):
+                if stop_requested.is_set():
+                    log_line("SIGINT during downloads — cancelling pending futures.", lock=log_lock)
+                    for f in futures:
+                        if not f.done():
+                            f.cancel()
+                    break
+
                 item_id = futures[fut]
                 try:
                     outcome: DownloadOutcome = fut.result()
@@ -401,11 +474,30 @@ def main() -> None:
                     log_line(f"download future error {item_id}: {e}", lock=log_lock)
                     idx = id_to_index[item_id]
                     ready[idx] = None
+                    with chunk_lock:
+                        n_done += 1
+                        n_failed += 1
                     continue
+
                 idx = id_to_index[outcome.item_id]
+
+                with chunk_lock:
+                    n_done += 1
+                    if outcome.error:
+                        n_failed += 1
+                    else:
+                        n_ok += 1
+                        sum_bytes += outcome.bytes_downloaded
+                        sum_ms += outcome.elapsed_ms
+                    done_now = n_done
+
                 if outcome.error:
                     ready[idx] = None
-                    log_line(f"download failed {outcome.item_id}: {outcome.error}", lock=log_lock)
+                    log_line(
+                        f"download failed [{n_done}/{n_total}] {outcome.item_id} "
+                        f"({outcome.elapsed_ms}ms): {outcome.error}",
+                        lock=log_lock,
+                    )
                     with progress_lock:
                         failed_ids.add(outcome.item_id)
                         append_history(
@@ -419,7 +511,22 @@ def main() -> None:
                         )
                     save_progress(completed_ids, failed_ids, progress_lock)
                     continue
+
                 ready[idx] = ReadyRow(item_id=outcome.item_id, image=outcome.image)
+
+                # Per-N progress so the user sees life
+                if done_now <= 5 or done_now % 25 == 0:
+                    log_line(
+                        f"download ok [{done_now}/{n_total}] {outcome.item_id} "
+                        f"{outcome.bytes_downloaded // 1024}KB in {outcome.elapsed_ms}ms",
+                        lock=log_lock,
+                    )
+        finally:
+            heartbeat_stop.set()
+            ex.shutdown(wait=False, cancel_futures=True)
+
+        if stop_requested.is_set():
+            break
 
         # Encode in batches (preserve order for logging)
         to_encode: list[ReadyRow] = [r for r in ready if r is not None]
