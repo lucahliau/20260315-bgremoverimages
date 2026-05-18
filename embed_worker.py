@@ -133,15 +133,15 @@ def load_progress() -> tuple[set[str], set[str]]:
         return set(), set()
 
 
-def save_progress(completed: set[str], failed: set[str], lock: threading.Lock) -> None:
-    with lock:
-        PROGRESS_FILE.write_text(
-            json.dumps(
-                {"completed": sorted(completed), "failed": sorted(failed)},
-                indent=2,
-            ),
-            encoding="utf-8",
-        )
+def save_progress(completed: set[str], failed: set[str]) -> None:
+    """Write progress snapshot. Caller MUST already hold the progress lock."""
+    PROGRESS_FILE.write_text(
+        json.dumps(
+            {"completed": sorted(completed), "failed": sorted(failed)},
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
 
 
 def append_history(record: dict[str, Any]) -> None:
@@ -301,7 +301,7 @@ def main() -> None:
         sys.exit(1)
 
     log_lock = threading.Lock()
-    progress_lock = threading.Lock()
+    progress_lock = threading.RLock()
     completed_ids, failed_ids = load_progress()
 
     log_line("=" * 60, lock=log_lock)
@@ -418,10 +418,18 @@ def main() -> None:
         if sigint_count["n"] == 1:
             log_line(
                 "SIGINT received — cancelling pending downloads. "
+                "Process will hard-exit in 5s if it doesn't stop on its own. "
                 "Press Ctrl+C again to force-exit immediately.",
                 lock=log_lock,
             )
             stop_requested.set()
+            # If the main thread is parked in a C call (e.g., model_st.encode
+            # on MPS, a blocking C-level lock, or a stuck network read) it
+            # will never observe stop_requested. Schedule a hard exit so a
+            # single Ctrl+C is always effective within 5 seconds.
+            t = threading.Timer(5.0, lambda: os._exit(130))
+            t.daemon = True
+            t.start()
         else:
             log_line("Second SIGINT — force exiting.", lock=log_lock)
             os._exit(130)
@@ -534,7 +542,7 @@ def main() -> None:
                                 "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                             }
                         )
-                    save_progress(completed_ids, failed_ids, progress_lock)
+                        save_progress(completed_ids, failed_ids)
                     continue
 
                 ready[idx] = ReadyRow(item_id=outcome.item_id, image=outcome.image)
@@ -582,13 +590,33 @@ def main() -> None:
             )
             pil_list = [r.image for r in batch]
             t_enc = time.monotonic()
-            vecs = model_st.encode(
-                pil_list,
-                batch_size=len(pil_list),
-                convert_to_numpy=True,
-                normalize_embeddings=True,
-                show_progress_bar=False,
-            )
+            # MPS is known to occasionally wedge inside encode() with no
+            # observable progress. Arm a watchdog so the outer restart loop
+            # gets a chance to recover instead of silently sleeping forever.
+            encode_timeout_s = max(60.0, len(pil_list) * 5.0)
+
+            def _encode_watchdog_fire(item_ids: list[str] = [r.item_id for r in batch]) -> None:
+                log_line(
+                    f"  encode watchdog FIRED after {encode_timeout_s:.0f}s "
+                    f"(batch_size={len(item_ids)}). Force-exiting (124) so the "
+                    f"outer restart loop can resume. Stuck items: {item_ids[:3]}…",
+                    lock=log_lock,
+                )
+                os._exit(124)
+
+            encode_watchdog = threading.Timer(encode_timeout_s, _encode_watchdog_fire)
+            encode_watchdog.daemon = True
+            encode_watchdog.start()
+            try:
+                vecs = model_st.encode(
+                    pil_list,
+                    batch_size=len(pil_list),
+                    convert_to_numpy=True,
+                    normalize_embeddings=True,
+                    show_progress_bar=False,
+                )
+            finally:
+                encode_watchdog.cancel()
             enc_ms = int((time.monotonic() - t_enc) * 1000)
 
             batch_rows: list[tuple[str, Any]] = []
@@ -613,7 +641,7 @@ def main() -> None:
                     append_history(
                         {"itemId": item_id, "model": args.model, "status": "success", "ts": now_ts}
                     )
-                save_progress(completed_ids, failed_ids, progress_lock)
+                save_progress(completed_ids, failed_ids)
 
             log_line(
                 f"  encode batch [{batch_idx}/{n_encode_batches}] done size={len(batch)} "

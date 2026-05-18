@@ -1,0 +1,990 @@
+[2026-05-11T01:59:16Z] ============================================================
+[2026-05-11T01:59:16Z] embed_worker start model=clip-vit-b-32-image st=clip-ViT-B-32 device=mps batch=32 dl_workers=12 work_chunk=256 limit=unlimited
+[2026-05-11T01:59:16Z] ============================================================
+[2026-05-11T02:01:40Z] ============================================================
+[2026-05-11T02:01:40Z] embed_worker start model=clip-vit-b-32-image st=clip-ViT-B-32 device=mps batch=32 dl_workers=12 work_chunk=256 limit=unlimited
+[2026-05-11T02:01:40Z] ============================================================
+[2026-05-11T02:01:40Z] DATABASE_URL had non-libpq query params; sanitized for psycopg2.
+[2026-05-11T02:02:19Z] Items needing embedding (DB): 2654
+[2026-05-11T02:02:19Z] Dry run — exiting.
+[2026-05-12T04:56:48Z] ============================================================
+[2026-05-12T04:56:48Z] embed_worker start model=clip-vit-b-32-image st=clip-ViT-B-32 device=mps batch=64 dl_workers=32 work_chunk=512 limit=unlimited
+[2026-05-12T04:56:48Z] ============================================================
+[2026-05-12T04:56:48Z] DATABASE_URL had non-libpq query params; sanitized for psycopg2.
+[2026-05-12T04:56:49Z] Items needing embedding (DB): 2851
+[2026-05-12T04:57:15Z] Loading SentenceTransformer('clip-ViT-B-32') on 'mps'…
+[2026-05-12T04:58:32Z] Fetched 512 rows from DB
+[2026-05-12T05:24:21Z] SIGINT — will finish current batch then exit.
+[2026-05-12T05:24:22Z] SIGINT — will finish current batch then exit.
+[2026-05-12T05:24:22Z] SIGINT — will finish current batch then exit.
+[2026-05-12T05:24:41Z] SIGINT — will finish current batch then exit.
+[2026-05-12T05:28:29Z] ============================================================
+[2026-05-12T05:28:29Z] embed_worker start model=clip-vit-b-32-image st=clip-ViT-B-32 device=mps batch=32 dl_workers=4 work_chunk=64 limit=20
+[2026-05-12T05:28:29Z] ============================================================
+[2026-05-12T05:28:29Z] DATABASE_URL had non-libpq query params; sanitized for psycopg2.
+[2026-05-12T05:28:31Z] Items needing embedding (DB): 2339
+[2026-05-12T05:28:35Z] Loading SentenceTransformer('clip-ViT-B-32') on 'mps'…
+[2026-05-12T05:28:38Z] Fetched 20 rows from DB
+[2026-05-12T05:28:39Z] download ok [1/20] d079a5b6-d233-4a37-8c71-6e3a408c8dd8 879KB in 985ms
+[2026-05-12T05:28:39Z] download ok [2/20] 73147353-c564-4886-9e35-021350562b55 678KB in 1180ms
+[2026-05-12T05:28:39Z] download ok [3/20] e3d00240-b5ed-426b-8738-02c3ffa90c31 969KB in 752ms
+[2026-05-12T05:28:40Z] download ok [4/20] 262198a3-d44f-4c4b-8916-236d96f14d82 1793KB in 1826ms
+[2026-05-12T05:28:40Z] download ok [5/20] 06e40215-aa5d-4a89-a9f5-40dd7e835651 1193KB in 910ms
+[2026-05-12T12:59:57Z] SIGINT received — cancelling pending downloads. Press Ctrl+C again to force-exit immediately.
+[2026-05-12T13:00:01Z] Second SIGINT — force exiting.
+[2026-05-12T13:17:19Z] ============================================================
+[2026-05-12T13:17:19Z] embed_worker start model=clip-vit-b-32-image st=clip-ViT-B-32 device=mps batch=32 dl_workers=12 work_chunk=64 limit=unlimited
+[2026-05-12T13:17:19Z] ============================================================
+[2026-05-12T13:17:19Z] DATABASE_URL had non-libpq query params; sanitized for psycopg2.
+[2026-05-12T13:17:21Z] Items needing embedding (DB): 2319
+[2026-05-12T13:17:24Z] Loading SentenceTransformer('clip-ViT-B-32') on 'mps'…
+[2026-05-12T13:17:27Z] Fetched 64 rows from DB
+[2026-05-12T13:17:29Z] download ok [1/64] a0980e0f-fc0b-43b9-8955-f36a9f1f88c6 168KB in 1812ms
+[2026-05-12T13:17:29Z] download ok [2/64] ad68d346-82f9-4c89-a7c8-c1b01b3b59c3 351KB in 2019ms
+[2026-05-12T13:17:30Z] download ok [3/64] 7fbd420c-340c-4a1c-8d7e-1e5f91f8fa7d 357KB in 2367ms
+[2026-05-12T13:17:30Z] download ok [4/64] 18547c40-5285-4ee6-8017-84d7570f2716 324KB in 2388ms
+[2026-05-12T13:17:30Z] download ok [5/64] 73c071f3-12e9-4391-8c6b-1379c8801572 672KB in 2527ms
+[2026-05-12T13:17:30Z] download ok [10/64] a7e90e6d-1b67-4475-952e-e9b8fccce687 135KB in 740ms
+[2026-05-12T13:17:32Z] download ok [15/64] cc7a50e6-5d5b-4baa-bd7f-92757ca6fc3a 1745KB in 2200ms
+[2026-05-12T13:17:33Z] download ok [20/64] 7fcddf4f-d459-4d40-9889-9166c69fd3a4 762KB in 2562ms
+[2026-05-12T13:17:34Z] download ok [25/64] ed1af1b8-c855-4588-97e0-0e2383dd4c6b 571KB in 1867ms
+[2026-05-12T13:17:35Z] download ok [30/64] e0d9c193-1990-4196-aec0-4cd4d761e085 1749KB in 2578ms
+[2026-05-12T13:17:36Z] download ok [35/64] 4aa9f2e4-a99b-46b5-b0d9-8cffb54a05ed 1856KB in 8936ms
+[2026-05-12T13:17:37Z] download ok [40/64] 3c8ee6d9-ca8f-4226-a469-a2004eb73d53 1223KB in 2213ms
+[2026-05-12T13:17:38Z] download ok [45/64] 102d5f57-6bf1-4336-bbee-478b311fd95e 1689KB in 3197ms
+[2026-05-12T13:17:39Z] download ok [50/64] 4b9a7689-518b-48c8-8917-27501a5214ab 1538KB in 1955ms
+[2026-05-12T13:17:39Z] download ok [55/64] 112af12b-aae1-4c29-9032-6bc22c808f97 643KB in 1781ms
+[2026-05-12T13:17:40Z] download ok [60/64] 22d8707c-7e51-47e5-a1b7-01ed7d33ea99 133KB in 1168ms
+[2026-05-12T13:17:41Z] download ok [64/64] 5dc19cc2-0c12-4f79-9fec-474489c366e3 1532KB in 2086ms
+[2026-05-12T13:19:04Z] SIGINT received — cancelling pending downloads. Press Ctrl+C again to force-exit immediately.
+[2026-05-12T13:19:05Z] Second SIGINT — force exiting.
+[2026-05-12T13:19:26Z] ============================================================
+[2026-05-12T13:19:26Z] embed_worker start model=clip-vit-b-32-image st=clip-ViT-B-32 device=mps batch=32 dl_workers=12 work_chunk=64 limit=unlimited
+[2026-05-12T13:19:26Z] ============================================================
+[2026-05-12T13:19:26Z] DATABASE_URL had non-libpq query params; sanitized for psycopg2.
+[2026-05-12T13:19:27Z] Items needing embedding (DB): 2287
+[2026-05-12T13:19:31Z] Loading SentenceTransformer('clip-ViT-B-32') on 'mps'…
+[2026-05-12T13:19:34Z] Fetched 64 rows from DB
+[2026-05-12T13:19:36Z] download ok [1/64] 31d07281-84da-4499-b070-e634a2652933 1722KB in 2206ms
+[2026-05-12T13:19:37Z] download ok [2/64] 85df0914-73e7-4040-ad21-065c4bd7c18b 783KB in 2939ms
+[2026-05-12T13:19:37Z] download ok [3/64] 5adfebf6-b84e-4283-be55-02bd39831621 806KB in 3057ms
+[2026-05-12T13:19:37Z] download ok [4/64] a797f1c4-c3d3-4b3f-bf6c-c4cc1aeb2162 794KB in 3077ms
+[2026-05-12T13:19:37Z] download ok [5/64] 652a3b60-ba67-4a7c-b9ac-e6d1dc8c29fa 780KB in 3148ms
+[2026-05-12T13:19:38Z] download ok [10/64] 7fe7222f-69bc-49bf-b17c-aa3abd81ee1c 1520KB in 4098ms
+[2026-05-12T13:19:38Z] download ok [15/64] 862cbdc6-3d74-487d-8d81-3b614f250eb0 800KB in 1576ms
+[2026-05-12T13:19:39Z] download ok [20/64] cbb1e7d8-cbba-44a9-872c-a2b357beb0ac 1694KB in 5213ms
+[2026-05-12T13:19:40Z] download ok [25/64] 73ee72f5-25ae-4e2e-93ac-343a693bbf8b 1306KB in 1862ms
+[2026-05-12T13:19:41Z] download ok [30/64] 299cb847-c41e-424d-8b0f-0a8f531281f0 1233KB in 2058ms
+[2026-05-12T13:19:42Z] download ok [35/64] 3f926200-f4f0-43f7-9758-96fd9c962358 689KB in 1727ms
+[2026-05-12T13:19:42Z] download ok [40/64] 2f75bc4c-b59a-4ba2-858c-5d7b0b7dfe8d 225KB in 1277ms
+[2026-05-12T13:19:43Z] download ok [45/64] c3901a04-5d88-46ea-b354-59d9a2425c1d 1975KB in 2327ms
+[2026-05-12T13:19:45Z] download ok [50/64] d1c78b70-409a-416d-9292-acbcdbdf8d08 1373KB in 2839ms
+[2026-05-12T13:19:46Z] download ok [55/64] e65e2e4f-805d-4a94-80c7-38fc3c51ae09 1796KB in 3046ms
+[2026-05-12T13:19:47Z] download ok [60/64] 188e47b5-b852-4e7d-bb11-0584298845cc 309KB in 1839ms
+[2026-05-12T13:19:48Z] download ok [64/64] 91d6bc68-f5e2-42a6-9dd4-658d23302739 1864KB in 2502ms
+[2026-05-12T13:23:39Z] SIGINT received — cancelling pending downloads. Press Ctrl+C again to force-exit immediately.
+[2026-05-12T13:23:39Z] Second SIGINT — force exiting.
+[2026-05-12T13:24:23Z] ============================================================
+[2026-05-12T13:24:23Z] embed_worker start model=clip-vit-b-32-image st=clip-ViT-B-32 device=mps batch=32 dl_workers=12 work_chunk=64 limit=unlimited
+[2026-05-12T13:24:23Z] ============================================================
+[2026-05-12T13:24:23Z] DATABASE_URL had non-libpq query params; sanitized for psycopg2.
+[2026-05-12T13:24:24Z] Items needing embedding (DB): 2255
+[2026-05-12T13:24:28Z] Loading SentenceTransformer('clip-ViT-B-32') on 'mps'…
+[2026-05-12T13:24:31Z] Warming up MPS kernels (first encode JIT-compiles, ~30-90s on cold MPS)…
+[2026-05-12T13:24:32Z] Warmup done in 781ms; subsequent batches will be fast.
+[2026-05-12T13:24:32Z] Fetched 64 rows from DB
+[2026-05-12T13:24:34Z] download ok [1/64] 3f926200-f4f0-43f7-9758-96fd9c962358 689KB in 1647ms
+[2026-05-12T13:24:34Z] download ok [2/64] 5cc4e401-d26a-482a-afe3-3548e9111853 162KB in 471ms
+[2026-05-12T13:24:34Z] download ok [3/64] 2f75bc4c-b59a-4ba2-858c-5d7b0b7dfe8d 225KB in 2269ms
+[2026-05-12T13:24:34Z] download ok [4/64] cf2010ee-0f33-4f35-aa02-2a4b0f67da91 198KB in 2278ms
+[2026-05-12T13:24:35Z] download ok [5/64] b2183504-4333-42c1-a142-998e4b971fd5 234KB in 2453ms
+[2026-05-12T13:24:35Z] download ok [10/64] 12a95366-5749-4cd9-a62e-d76fe1149737 368KB in 1098ms
+[2026-05-12T13:24:37Z] download ok [15/64] d1c78b70-409a-416d-9292-acbcdbdf8d08 1373KB in 2037ms
+[2026-05-12T13:24:38Z] download ok [20/64] 0d43aacb-c43b-48bf-bb8a-69f6d98ef4bc 2103KB in 2350ms
+[2026-05-12T13:24:39Z] download ok [25/64] 188e47b5-b852-4e7d-bb11-0584298845cc 309KB in 1489ms
+[2026-05-12T13:24:40Z] download ok [30/64] b5d3f30a-2d98-4ece-95fb-8d0242b6316a 1991KB in 8365ms
+[2026-05-12T13:24:42Z] download ok [35/64] c3901a04-5d88-46ea-b354-59d9a2425c1d 1975KB in 9438ms
+[2026-05-12T13:24:42Z] download ok [40/64] 0683da91-4acc-4bb4-aec1-bd890c12298e 2331KB in 2503ms
+[2026-05-12T13:24:44Z] download ok [45/64] 375b2a71-37e9-4bc3-bca9-80c1b9065da8 1954KB in 2443ms
+[2026-05-12T13:24:45Z] download ok [50/64] 09d9fbbd-bb3e-4c13-bf95-a6461ca22668 1624KB in 4686ms
+[2026-05-12T13:24:46Z] download ok [55/64] 3597c31b-c002-4b87-9bd6-a9d95983970a 540KB in 2245ms
+[2026-05-12T13:24:47Z] download ok [60/64] 3247deed-3924-4cc8-95eb-d63924906cc7 701KB in 2560ms
+[2026-05-12T13:24:47Z] download heartbeat: done=61/64 ok=61 failed=0 in_flight=3 ~4.1 ok/s avg=2718ms total=71.3MB
+[2026-05-12T13:24:47Z] download ok [64/64] 15c35708-9825-4b0d-9c60-3963fffe408a 1819KB in 2884ms
+[2026-05-12T13:24:47Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-12T13:24:47Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:38:47Z] SIGINT received — cancelling pending downloads. Press Ctrl+C again to force-exit immediately.
+[2026-05-14T04:38:48Z] Second SIGINT — force exiting.
+[2026-05-14T04:46:32Z] ============================================================
+[2026-05-14T04:46:32Z] embed_worker start model=clip-vit-b-32-image st=clip-ViT-B-32 device=mps batch=32 dl_workers=12 work_chunk=64 limit=64
+[2026-05-14T04:46:32Z] ============================================================
+[2026-05-14T04:46:32Z] DATABASE_URL had non-libpq query params; sanitized for psycopg2.
+[2026-05-14T04:46:35Z] Items needing embedding (DB): 2223
+[2026-05-14T04:46:43Z] Loading SentenceTransformer('clip-ViT-B-32') on 'mps'…
+[2026-05-14T04:46:46Z] Warming up MPS kernels (first encode JIT-compiles, ~30-90s on cold MPS)…
+[2026-05-14T04:46:46Z] Warmup done in 183ms; subsequent batches will be fast.
+[2026-05-14T04:46:46Z] Fetched 64 rows from DB
+[2026-05-14T04:46:48Z] download ok [1/64] 39076581-ad39-4cd2-a2e5-97836c13c3e3 274KB in 1796ms
+[2026-05-14T04:46:49Z] download ok [2/64] 57a2d945-2fcd-44e4-9bea-51167f03d721 147KB in 2336ms
+[2026-05-14T04:46:49Z] download ok [3/64] 41fcaef2-23c0-4738-974c-2dc4e8825c28 289KB in 2919ms
+[2026-05-14T04:46:49Z] download ok [4/64] 713e4577-dbaf-48cb-9306-2270cacf1a41 898KB in 3011ms
+[2026-05-14T04:46:50Z] download ok [5/64] e0a2cad3-a70c-45a0-8c73-53b67fc5d993 701KB in 3222ms
+[2026-05-14T04:46:51Z] download ok [10/64] e74e9bcf-362e-47d7-be7f-9ff256b825ef 534KB in 1500ms
+[2026-05-14T04:46:52Z] download ok [15/64] fb9e22c3-222e-4f2d-8e40-9d88f9fda85d 1535KB in 2264ms
+[2026-05-14T04:46:53Z] download ok [20/64] 3c64891d-2258-4c2a-aecf-851b2b714e9e 1941KB in 2364ms
+[2026-05-14T04:46:54Z] download ok [25/64] 15c35708-9825-4b0d-9c60-3963fffe408a 1819KB in 2266ms
+[2026-05-14T04:46:55Z] download ok [30/64] 128c7255-d0e5-48cb-ae49-eb6576a89418 352KB in 1182ms
+[2026-05-14T04:46:55Z] download ok [35/64] dc1d1030-360d-4994-b082-8409e0a092eb 354KB in 645ms
+[2026-05-14T04:46:56Z] download ok [40/64] 0c720ca5-24be-4f82-9728-568680ab47eb 483KB in 766ms
+[2026-05-14T04:46:57Z] download ok [45/64] ad8504f4-b43b-4797-9153-2629cbeb2630 345KB in 1267ms
+[2026-05-14T04:46:58Z] download ok [50/64] 272be016-d14d-41c2-ba0e-71521e416f68 442KB in 1388ms
+[2026-05-14T04:46:59Z] download ok [55/64] ecc5c6fe-4ab6-4ca0-9658-defdaa747f1f 528KB in 1989ms
+[2026-05-14T04:47:00Z] download ok [60/64] b7467fe0-1dd6-4319-9a25-57d225431997 1502KB in 2298ms
+[2026-05-14T04:47:01Z] download ok [64/64] e8393baa-fd63-45de-a567-da3bd633b904 2668KB in 14689ms
+[2026-05-14T04:47:01Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:47:01Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:47:03Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=498ms db=1008ms
+[2026-05-14T04:47:03Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:47:04Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=399ms db=812ms
+[2026-05-14T04:47:04Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=64
+[2026-05-14T04:47:04Z] Reached --limit for this run.
+[2026-05-14T04:47:04Z] embed_worker finished.
+[2026-05-14T04:47:47Z] ============================================================
+[2026-05-14T04:47:47Z] embed_worker start model=clip-vit-b-32-image st=clip-ViT-B-32 device=mps batch=32 dl_workers=12 work_chunk=64 limit=unlimited
+[2026-05-14T04:47:47Z] ============================================================
+[2026-05-14T04:47:47Z] DATABASE_URL had non-libpq query params; sanitized for psycopg2.
+[2026-05-14T04:47:47Z] Items needing embedding (DB): 2159
+[2026-05-14T04:47:51Z] Loading SentenceTransformer('clip-ViT-B-32') on 'mps'…
+[2026-05-14T04:47:53Z] Warming up MPS kernels (first encode JIT-compiles, ~30-90s on cold MPS)…
+[2026-05-14T04:47:53Z] Warmup done in 108ms; subsequent batches will be fast.
+[2026-05-14T04:47:53Z] Fetched 64 rows from DB
+[2026-05-14T04:47:56Z] download ok [1/64] be2e8e49-1cde-42da-9d5f-b3fb8aea9e98 516KB in 2676ms
+[2026-05-14T04:47:56Z] download ok [2/64] 1d5bf50c-b759-4a5c-9f30-830669a383d9 1587KB in 2689ms
+[2026-05-14T04:47:56Z] download ok [3/64] 3029408b-0d41-45d5-a755-e60f60f181ae 459KB in 2872ms
+[2026-05-14T04:47:56Z] download ok [4/64] bdaf6478-c7ba-49e0-82ff-52a18e6e5e55 853KB in 3215ms
+[2026-05-14T04:47:56Z] download ok [5/64] 4dee9b5a-a205-451a-b7e1-2c2ad8673730 744KB in 3306ms
+[2026-05-14T04:47:57Z] download ok [10/64] b1febbc2-d235-4587-be22-7991e56a1d8d 1546KB in 1485ms
+[2026-05-14T04:47:58Z] download ok [15/64] 3229e301-a5f4-405d-b966-2c0ad6cf1e12 1155KB in 1669ms
+[2026-05-14T04:47:59Z] download ok [20/64] 468c3243-d3d3-47c1-ac0c-14ee0716838a 280KB in 849ms
+[2026-05-14T04:48:00Z] download ok [25/64] a3a977c3-5062-40d7-8ee7-5b8a74181907 1120KB in 1648ms
+[2026-05-14T04:48:02Z] download ok [30/64] 1542e398-dffe-4977-87ad-2ccae9823739 1671KB in 2396ms
+[2026-05-14T04:48:03Z] download ok [35/64] 77e7b4b2-cb86-4674-8b74-c2b4ae3efbeb 2117KB in 2596ms
+[2026-05-14T04:48:04Z] download ok [40/64] 03924db3-b78e-45f9-a018-e5a286dd30e7 869KB in 1968ms
+[2026-05-14T04:48:05Z] download ok [45/64] a8f52f49-ed25-470d-b0cd-6ffddb8b8e90 1755KB in 2294ms
+[2026-05-14T04:48:06Z] download ok [50/64] 0b085892-1ed2-4b6a-82df-38bcd165da40 170KB in 1542ms
+[2026-05-14T04:48:08Z] download ok [55/64] 15304481-53f3-4b64-b121-ea454916fbb2 1609KB in 3114ms
+[2026-05-14T04:48:08Z] download ok [60/64] e22f6050-bdb4-400b-b886-52f66e2e4fcf 3308KB in 3610ms
+[2026-05-14T04:48:08Z] download heartbeat: done=60/64 ok=60 failed=0 in_flight=4 ~4.0 ok/s avg=2600ms total=72.0MB
+[2026-05-14T04:48:09Z] download ok [64/64] 3e9a0641-b306-49a5-8be4-ff38bdf08017 2704KB in 15412ms
+[2026-05-14T04:48:09Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:48:09Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:48:10Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=470ms db=743ms
+[2026-05-14T04:48:10Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:48:11Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=417ms db=715ms
+[2026-05-14T04:48:11Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=64
+[2026-05-14T04:48:11Z] Fetched 64 rows from DB
+[2026-05-14T04:48:12Z] download ok [1/64] 6578141e-0792-4bbc-9650-c1561713b2f1 375KB in 1344ms
+[2026-05-14T04:48:12Z] download ok [2/64] 73f246af-9781-4c93-bce0-72bde9dcde51 307KB in 1467ms
+[2026-05-14T04:48:13Z] download ok [3/64] 0a1a78b6-470e-4faf-9f40-29c49bb2f287 260KB in 990ms
+[2026-05-14T04:48:14Z] download ok [4/64] 8eed7170-8fc1-4490-a418-e37960dd5104 406KB in 2505ms
+[2026-05-14T04:48:14Z] download ok [5/64] a2be7593-9f69-40ad-9d67-0b10907bf083 906KB in 2539ms
+[2026-05-14T04:48:16Z] download ok [10/64] 47d3fd89-548b-486c-81f4-b271eb0fa63f 3620KB in 2802ms
+[2026-05-14T04:48:18Z] download ok [15/64] 30f0ed5f-8b83-462f-a474-f86b3b921ffa 320KB in 1169ms
+[2026-05-14T04:48:19Z] download ok [20/64] a4ff1e15-ef74-4c8e-a712-6e3ca3534729 325KB in 1303ms
+[2026-05-14T04:48:20Z] download ok [25/64] fe629e50-2855-4f49-b3c3-0b622c43aeed 1979KB in 3513ms
+[2026-05-14T04:48:21Z] download ok [30/64] 247e49d7-6750-4391-b163-da77cb385bb8 132KB in 697ms
+[2026-05-14T04:48:22Z] download ok [35/64] 3938631b-20c5-4bbd-bb93-3e4a9752b504 440KB in 1268ms
+[2026-05-14T04:48:23Z] download ok [40/64] dcfe90fb-e547-4db0-a26d-1b84cfd9a84c 3359KB in 11809ms
+[2026-05-14T04:48:25Z] download ok [45/64] 0b497954-59b9-4c71-b66d-dec64e281e50 729KB in 2323ms
+[2026-05-14T04:48:25Z] download ok [50/64] f4fd11a4-a8db-40f5-90d8-a801853e3362 2391KB in 4912ms
+[2026-05-14T04:48:26Z] download heartbeat: done=54/64 ok=54 failed=0 in_flight=10 ~3.6 ok/s avg=3107ms total=72.4MB
+[2026-05-14T04:48:26Z] download ok [55/64] 4eaabcc5-1eaa-4c96-bc62-de9471cc478d 2277KB in 2980ms
+[2026-05-14T04:48:27Z] download ok [60/64] 30ad17f0-e706-4d26-b275-72d4c65df02e 422KB in 1393ms
+[2026-05-14T04:48:27Z] download ok [64/64] 3b984d6c-af4b-480c-be0c-033b5fc750b5 1487KB in 2237ms
+[2026-05-14T04:48:28Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:48:28Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:48:29Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=480ms db=706ms
+[2026-05-14T04:48:29Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:48:30Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=488ms db=714ms
+[2026-05-14T04:48:30Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=128
+[2026-05-14T04:48:30Z] Fetched 64 rows from DB
+[2026-05-14T04:48:32Z] download ok [1/64] dac199a5-e26a-4d6f-aadb-bcbf9eabf6e1 550KB in 2287ms
+[2026-05-14T04:48:33Z] download ok [2/64] 1fe588aa-42de-46c6-bb3a-9710890a65f0 929KB in 3510ms
+[2026-05-14T04:48:34Z] download ok [3/64] d06b9ad2-5499-4f3c-8e3a-79813342fafb 1383KB in 4296ms
+[2026-05-14T04:48:34Z] download ok [4/64] 59dfd68b-e2cc-4d1a-a093-6075bb756a18 3227KB in 2143ms
+[2026-05-14T04:48:35Z] download ok [5/64] f972ae02-0651-409a-bfe8-28488c8e5f43 1117KB in 4678ms
+[2026-05-14T04:48:36Z] download ok [10/64] 6c668fb7-2c24-4cba-982e-c8b6900293c4 1641KB in 5534ms
+[2026-05-14T04:48:37Z] download ok [15/64] cd053274-37ba-42a4-bf5b-fd10b917bad0 818KB in 2156ms
+[2026-05-14T04:48:39Z] download ok [20/64] d7704e74-dc87-418c-9225-afdf6b5a5270 1361KB in 1692ms
+[2026-05-14T04:48:41Z] download ok [25/64] c2e30f60-a177-41b2-af76-025eb0377ccf 3078KB in 2924ms
+[2026-05-14T04:48:42Z] download ok [30/64] cc667eb2-f990-4d69-a217-06244c8ef3f9 1006KB in 1994ms
+[2026-05-14T04:48:43Z] download ok [35/64] 82780c2f-cd7b-437d-b45d-1a783d8345c6 1249KB in 2814ms
+[2026-05-14T04:48:45Z] download ok [40/64] 7f9c0c50-43a3-41ff-bb28-74306a0caef5 2111KB in 3060ms
+[2026-05-14T04:48:45Z] download heartbeat: done=40/64 ok=40 failed=0 in_flight=24 ~2.7 ok/s avg=3225ms total=63.5MB
+[2026-05-14T04:48:46Z] download ok [45/64] 9dc54afd-1d93-4ecb-9c2e-4952d6529f0d 1074KB in 2247ms
+[2026-05-14T04:48:47Z] download ok [50/64] c77288eb-d078-4d19-9b3a-a693482aee29 2633KB in 6068ms
+[2026-05-14T04:48:48Z] download ok [55/64] 248e026c-b01f-4151-8e70-9419ac38b4f1 3109KB in 18428ms
+[2026-05-14T04:48:50Z] download ok [60/64] c793987d-8612-422a-a355-37f8dd440c8b 343KB in 1452ms
+[2026-05-14T04:48:50Z] download ok [64/64] 61cb03b5-f08a-4ead-b102-63a2d2f77737 3604KB in 20171ms
+[2026-05-14T04:48:50Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:48:50Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:48:51Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=464ms db=713ms
+[2026-05-14T04:48:51Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:48:53Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=497ms db=692ms
+[2026-05-14T04:48:53Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=192
+[2026-05-14T04:48:53Z] Fetched 64 rows from DB
+[2026-05-14T04:48:54Z] download ok [1/64] f0300b8d-1a92-4e90-9b1c-69a88d8bcc35 851KB in 1384ms
+[2026-05-14T04:48:54Z] download ok [2/64] f40100f4-40be-465e-bbee-53c9de476a9f 636KB in 1635ms
+[2026-05-14T04:48:55Z] download ok [3/64] be41b9b3-d244-4e5a-a941-4e575b32d00f 948KB in 2877ms
+[2026-05-14T04:48:56Z] download ok [4/64] c57ea722-ae42-4502-a8cc-a3a2bc60551f 854KB in 3049ms
+[2026-05-14T04:48:56Z] download ok [5/64] c5f525b4-8f9d-4fc0-b276-14c2ca8d04b0 829KB in 3054ms
+[2026-05-14T04:48:57Z] download ok [10/64] 5df068ce-07d9-4e08-a5eb-5b9ca38174f1 431KB in 995ms
+[2026-05-14T04:48:58Z] download ok [15/64] c3293528-89f3-43cc-a3b6-049e62282067 1106KB in 1772ms
+[2026-05-14T04:48:59Z] download ok [20/64] 82d0f313-74ce-4780-9b5d-67d9e3bfdd29 1469KB in 2580ms
+[2026-05-14T04:49:00Z] download ok [25/64] 24513daf-39fe-491f-bcb8-817a8822acbe 2535KB in 2429ms
+[2026-05-14T04:49:02Z] download ok [30/64] ff32a16b-66e9-4c28-aa5a-f5cf277a8082 1273KB in 2598ms
+[2026-05-14T04:49:02Z] download ok [35/64] 208757c8-9a6d-4805-a8bc-4bae355cb244 346KB in 1141ms
+[2026-05-14T04:49:04Z] download ok [40/64] f175d808-6b76-4492-a745-6726f49589b4 593KB in 1767ms
+[2026-05-14T04:49:05Z] download ok [45/64] bed2fdb8-49ef-47f3-a807-ed4dcc93d2de 2343KB in 12192ms
+[2026-05-14T04:49:06Z] download ok [50/64] 6c8d61c8-04f4-4738-a866-f523bfcf2c5f 1669KB in 2028ms
+[2026-05-14T04:49:07Z] download ok [55/64] a420b17c-ea08-420f-9384-7b061ff4f4c7 1041KB in 2512ms
+[2026-05-14T04:49:08Z] download heartbeat: done=56/64 ok=56 failed=0 in_flight=8 ~3.7 ok/s avg=2692ms total=70.1MB
+[2026-05-14T04:49:08Z] download ok [60/64] 716474c9-2b84-414e-8e6b-87e5c62bb854 3227KB in 3441ms
+[2026-05-14T04:49:09Z] download ok [64/64] 7780ccfa-531b-45da-9658-09c575902c9d 3249KB in 4986ms
+[2026-05-14T04:49:09Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:49:09Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:49:11Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=469ms db=704ms
+[2026-05-14T04:49:11Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:49:12Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=492ms db=693ms
+[2026-05-14T04:49:12Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=256
+[2026-05-14T04:49:12Z] Fetched 64 rows from DB
+[2026-05-14T04:49:14Z] download ok [1/64] de94fc86-b0cf-452d-aaae-3c850f3ab7f4 1315KB in 1888ms
+[2026-05-14T04:49:14Z] download ok [2/64] 61bec024-0f31-49d9-89ef-fa56c4696ab6 323KB in 2059ms
+[2026-05-14T04:49:14Z] download ok [3/64] 2651e0b1-12de-4254-bdf7-4c8e5cf552ad 454KB in 2128ms
+[2026-05-14T04:49:14Z] download ok [4/64] c93e31b8-c29a-4945-9f8c-29107c9c5528 605KB in 2232ms
+[2026-05-14T04:49:14Z] download ok [5/64] f12424cb-e6df-47f2-ad23-3d8e36b6686c 469KB in 2336ms
+[2026-05-14T04:49:15Z] download ok [10/64] fca47f76-9db8-4a67-ba65-c7a867ee23c0 1280KB in 1503ms
+[2026-05-14T04:49:16Z] download ok [15/64] 1485ee41-d470-44ec-ba48-6fa53da3bb37 969KB in 3795ms
+[2026-05-14T04:49:17Z] download ok [20/64] 7f92bfed-18bf-4b8e-a521-5ce2ee2eb27e 281KB in 1492ms
+[2026-05-14T04:49:18Z] download ok [25/64] 3358e711-9092-4d41-ad94-86f10f4516da 607KB in 1187ms
+[2026-05-14T04:49:19Z] download ok [30/64] ec6892cd-7635-48e1-b4fa-45a629105280 492KB in 1953ms
+[2026-05-14T04:49:20Z] download ok [35/64] ffddfa0f-92f6-4a5f-838a-7d0f25ecd24d 1190KB in 2686ms
+[2026-05-14T04:49:22Z] download ok [40/64] cd67a733-1814-4dad-8098-483788a23184 2643KB in 2917ms
+[2026-05-14T04:49:23Z] download ok [45/64] 460a77d4-c617-45bc-8e25-e0375597fd40 923KB in 2551ms
+[2026-05-14T04:49:24Z] download ok [50/64] fb6d8d61-9005-482a-b543-b8334f1646cd 1078KB in 2342ms
+[2026-05-14T04:49:25Z] download ok [55/64] 102fc437-0d57-43c1-ab8c-f159c29c384b 1067KB in 2411ms
+[2026-05-14T04:49:25Z] download ok [60/64] 95bb04a8-9a4a-4266-a3bc-00ac7f81f312 1068KB in 2888ms
+[2026-05-14T04:49:26Z] download ok [64/64] 7a0e859a-90bd-4deb-8be9-d265d1d2ea44 3286KB in 2461ms
+[2026-05-14T04:49:26Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:49:26Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:49:27Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=558ms db=740ms
+[2026-05-14T04:49:27Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:49:30Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=472ms db=1757ms
+[2026-05-14T04:49:30Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=320
+[2026-05-14T04:49:30Z] Fetched 64 rows from DB
+[2026-05-14T04:49:31Z] download ok [1/64] 4eb761a0-f8c9-4c08-a211-babcc7bc7904 294KB in 1312ms
+[2026-05-14T04:49:31Z] download ok [2/64] 98957dfb-b478-4935-aeae-230fbeee45a1 156KB in 1351ms
+[2026-05-14T04:49:32Z] download ok [3/64] 2741e647-704f-44b7-b187-114d3c1222fe 368KB in 1743ms
+[2026-05-14T04:49:32Z] download ok [4/64] 0fab2d83-1821-402e-84bf-959e94f4c5c2 442KB in 2273ms
+[2026-05-14T04:49:32Z] download ok [5/64] 30d01b5d-c8f0-48d6-99ac-e40397f756f8 276KB in 2386ms
+[2026-05-14T04:49:38Z] download ok [10/64] 86c87dcd-ca0d-4fa1-abc8-43f0b28c0f5d 982KB in 6140ms
+[2026-05-14T04:49:40Z] download ok [15/64] e1b59959-301d-4ca6-9f58-72aed4fbaade 447KB in 2162ms
+[2026-05-14T04:49:41Z] download ok [20/64] f9bafff7-e46a-48d0-8690-d68f89b9ea6a 482KB in 1741ms
+[2026-05-14T04:49:43Z] download ok [25/64] 6f620d60-048d-4ec8-9582-1589ade6aa9a 1827KB in 2100ms
+[2026-05-14T04:49:44Z] download ok [30/64] 442b11fa-7ef7-447b-92bf-10117d085c67 1177KB in 1956ms
+[2026-05-14T04:49:45Z] download ok [35/64] 64af5929-3621-453b-bf45-d249f23d06a8 565KB in 1305ms
+[2026-05-14T04:49:45Z] download heartbeat: done=37/64 ok=37 failed=0 in_flight=27 ~2.5 ok/s avg=3880ms total=44.2MB
+[2026-05-14T04:49:46Z] download ok [40/64] 7bdd41b3-680b-4193-a694-068b651acc8c 1133KB in 1852ms
+[2026-05-14T04:49:47Z] download ok [45/64] 9038daf0-08a8-410c-9b52-c0ca48625093 1482KB in 2181ms
+[2026-05-14T04:49:49Z] download ok [50/64] 4337351b-6c0b-4e96-8524-e1bb11e4d3d6 2808KB in 2744ms
+[2026-05-14T04:49:50Z] download ok [55/64] 67fecf88-608b-4c66-9c1d-7a9ff4af6d48 147KB in 1383ms
+[2026-05-14T04:49:52Z] download ok [60/64] 3e57d59d-4452-4134-9bbd-fc8c73b1635c 4061KB in 3724ms
+[2026-05-14T04:49:52Z] download ok [64/64] cb5cd767-c310-4811-b2c9-e7d92392b446 3625KB in 22471ms
+[2026-05-14T04:49:52Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:49:52Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:49:54Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=627ms db=701ms
+[2026-05-14T04:49:54Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:49:55Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=544ms db=726ms
+[2026-05-14T04:49:55Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=384
+[2026-05-14T04:49:55Z] Fetched 64 rows from DB
+[2026-05-14T04:49:57Z] download ok [1/64] b9262f6d-4f50-4b69-8790-b0970db1ebaa 525KB in 1372ms
+[2026-05-14T04:49:57Z] download ok [2/64] d3aa9649-0aa5-4a66-8412-918edce9edaa 439KB in 2077ms
+[2026-05-14T04:49:57Z] download ok [3/64] 57eed175-9e3d-4cca-9993-fe638b6a4095 654KB in 2146ms
+[2026-05-14T04:49:58Z] download ok [4/64] 23935ff4-8be9-4df8-ad21-f66089eb6870 356KB in 2325ms
+[2026-05-14T04:49:58Z] download ok [5/64] 0cab7718-a131-41c5-80b0-64a515cc5e12 432KB in 2456ms
+[2026-05-14T04:49:59Z] download ok [10/64] f4878b2c-64ca-444f-8a79-42d751ef7876 860KB in 1564ms
+[2026-05-14T04:50:00Z] download ok [15/64] 31259ab9-8877-4976-9bd9-67bb7641c943 1879KB in 4644ms
+[2026-05-14T04:50:00Z] download ok [20/64] 0e1a68f6-7318-414f-8638-668a4012219f 2623KB in 2705ms
+[2026-05-14T04:50:01Z] download ok [25/64] fa986c85-635a-4a15-8561-2b25da300e2d 1576KB in 6101ms
+[2026-05-14T04:50:02Z] download ok [30/64] d87ea3be-293c-4e0b-82c5-2c06d8133a46 1410KB in 1656ms
+[2026-05-14T04:50:03Z] download ok [35/64] 14c677f9-82d7-4f25-8099-95223ac0ee48 765KB in 1478ms
+[2026-05-14T04:50:03Z] download ok [40/64] 358552bc-d05f-41b5-ac68-352ecea38211 679KB in 1640ms
+[2026-05-14T04:50:05Z] download ok [45/64] bc11156a-da89-4cd4-984d-a7a6cc373d32 635KB in 1942ms
+[2026-05-14T04:50:06Z] download ok [50/64] 9761c8f6-f12d-43b8-9c3a-40168ba97dc0 1628KB in 3971ms
+[2026-05-14T04:50:07Z] download ok [55/64] 44250203-0f80-4b1a-a3df-04537d5529ef 1694KB in 3944ms
+[2026-05-14T04:50:09Z] download ok [60/64] 4b54577e-f217-4890-9ebe-5401c3285c6d 1328KB in 2741ms
+[2026-05-14T04:50:09Z] download ok [64/64] 434395e0-d55c-4ca6-a5e0-84dbb14f9e74 3811KB in 7603ms
+[2026-05-14T04:50:09Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:50:09Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:50:11Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=584ms db=814ms
+[2026-05-14T04:50:11Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:50:12Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=553ms db=733ms
+[2026-05-14T04:50:12Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=448
+[2026-05-14T04:50:12Z] Fetched 64 rows from DB
+[2026-05-14T04:50:14Z] download ok [1/64] 1f41f883-626a-41bc-9ad5-db7d11e5c135 339KB in 1699ms
+[2026-05-14T04:50:14Z] download ok [2/64] eed169b5-5eab-4909-a0bc-14c4816edb28 653KB in 1821ms
+[2026-05-14T04:50:14Z] download ok [3/64] 1c614820-a146-4a8c-846c-1989764224ab 1279KB in 2028ms
+[2026-05-14T04:50:14Z] download ok [4/64] bfc1328e-5ba5-49d8-baaf-446d0df23c89 811KB in 2314ms
+[2026-05-14T04:50:14Z] download ok [5/64] 55480aec-4cdd-4156-b261-13ebb9eaa656 853KB in 2507ms
+[2026-05-14T04:50:15Z] download ok [10/64] a13193d1-ee59-43a5-a243-c901a3cbf6d5 1038KB in 3309ms
+[2026-05-14T04:50:17Z] download ok [15/64] 21286d52-434b-4dbe-8034-24ec17d5c796 1402KB in 4676ms
+[2026-05-14T04:50:18Z] download ok [20/64] 50873c54-f84b-48cc-865e-f5d7a0d46f93 1772KB in 2653ms
+[2026-05-14T04:50:19Z] download ok [25/64] 47f70832-9731-40f2-9106-31169d04b35f 1529KB in 2887ms
+[2026-05-14T04:50:20Z] download ok [30/64] fdc28902-522a-478c-b9cb-01cea4419ef9 645KB in 2555ms
+[2026-05-14T04:50:21Z] download ok [35/64] caddcf08-0e0b-4f5b-8da4-715166b29bb4 1829KB in 2941ms
+[2026-05-14T04:50:22Z] download ok [40/64] 14126b62-607d-4fce-a670-440f7cfbf835 884KB in 1941ms
+[2026-05-14T04:50:23Z] download ok [45/64] 2d2c855f-728f-4b37-957d-eb3672e1f836 1232KB in 2086ms
+[2026-05-14T04:50:25Z] download ok [50/64] e29d831e-a40d-47b4-9cdd-840e5843e64f 909KB in 2400ms
+[2026-05-14T04:50:27Z] download heartbeat: done=54/64 ok=54 failed=0 in_flight=10 ~3.6 ok/s avg=2597ms total=67.9MB
+[2026-05-14T04:50:27Z] download ok [55/64] 04bdbe7c-5fac-4517-bdac-eb65f53d05a7 626KB in 2846ms
+[2026-05-14T04:50:28Z] download ok [60/64] fdba30df-6ca7-4e7f-9453-e0d1e9243694 1311KB in 3380ms
+[2026-05-14T04:50:29Z] download ok [64/64] 5862b8e1-cb7a-4a08-bcda-a2eb5e4d601f 3111KB in 17280ms
+[2026-05-14T04:50:29Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:50:29Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:50:30Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=490ms db=744ms
+[2026-05-14T04:50:30Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:50:32Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=508ms db=715ms
+[2026-05-14T04:50:32Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=512
+[2026-05-14T04:50:32Z] Fetched 64 rows from DB
+[2026-05-14T04:50:33Z] download ok [1/64] de307c37-9bc7-4641-8e55-78387a81f948 3132KB in 1545ms
+[2026-05-14T04:50:34Z] download ok [2/64] 42431416-c818-44ed-bf16-164837765a2c 566KB in 1834ms
+[2026-05-14T04:50:34Z] download ok [3/64] d168af47-d015-449b-8c84-d175186791bd 1256KB in 2418ms
+[2026-05-14T04:50:35Z] download ok [4/64] f2001830-6872-4663-9879-dea18db99ecd 641KB in 2982ms
+[2026-05-14T04:50:35Z] download ok [5/64] 60d2c9a9-4320-4c12-8d85-7657d4f6dbcc 1835KB in 1759ms
+[2026-05-14T04:50:36Z] download ok [10/64] 5c955cac-0955-4d7f-8513-39676824dc0f 1290KB in 4513ms
+[2026-05-14T04:50:38Z] download ok [15/64] cced9577-5cc5-4b88-aea3-bfcc7fb2f65f 1369KB in 2488ms
+[2026-05-14T04:50:39Z] download ok [20/64] 322b921e-4dd7-466c-accd-fcd8adab6a1e 746KB in 1530ms
+[2026-05-14T04:50:39Z] download ok [25/64] 6958a6a7-5edf-419a-b8be-b8219d3afe74 2305KB in 3797ms
+[2026-05-14T04:50:40Z] download ok [30/64] 50f12bd3-663e-467f-8016-082d139f849f 890KB in 1495ms
+[2026-05-14T04:50:41Z] download ok [35/64] a89c5fae-c4f5-49f9-bf38-81b1098a46ef 1821KB in 2430ms
+[2026-05-14T04:50:42Z] download ok [40/64] fbab329a-e451-4d06-b02b-769dd4737d13 1522KB in 2146ms
+[2026-05-14T04:50:43Z] download ok [45/64] facaacf1-c9ac-4d53-879b-b85fd5f56b45 280KB in 1260ms
+[2026-05-14T04:50:45Z] download ok [50/64] c546ce7d-0c8a-428d-a49d-25edac00aa92 3228KB in 8292ms
+[2026-05-14T04:50:45Z] download ok [55/64] 25ee8894-2d37-4017-9618-adfa25f132d1 853KB in 2005ms
+[2026-05-14T04:50:46Z] download ok [60/64] 712d4a18-86f7-4752-a15f-47b00a280d13 2817KB in 3849ms
+[2026-05-14T04:50:47Z] download ok [64/64] 119bc2a2-7f3d-4b84-b8a2-eb1d2bf819b8 3663KB in 14886ms
+[2026-05-14T04:50:47Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:50:47Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:50:48Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=445ms db=791ms
+[2026-05-14T04:50:48Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:50:49Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=467ms db=686ms
+[2026-05-14T04:50:49Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=576
+[2026-05-14T04:50:49Z] Fetched 64 rows from DB
+[2026-05-14T04:50:51Z] download ok [1/64] 5cd13f73-7f85-4084-8dc9-d246c3ab01d1 431KB in 1485ms
+[2026-05-14T04:50:51Z] download ok [2/64] ce887e31-0239-4b81-938e-a87ef32720ce 868KB in 1855ms
+[2026-05-14T04:50:52Z] download ok [3/64] 0863b7d2-fd18-429d-a773-b57ac055cb75 725KB in 2645ms
+[2026-05-14T04:50:52Z] download ok [4/64] 404e6dcb-9198-445a-b0e6-d5e5976bedf0 639KB in 2984ms
+[2026-05-14T04:50:52Z] download ok [5/64] 70b98e58-36c0-4ebe-96b3-3119302b4f66 729KB in 1437ms
+[2026-05-14T04:50:54Z] download ok [10/64] b7e386e4-9a2d-40cb-8b41-9e253798190b 415KB in 1512ms
+[2026-05-14T04:50:55Z] download ok [15/64] 9b71111c-8974-4c08-bfaa-5b8d1ff82714 1103KB in 1314ms
+[2026-05-14T04:50:56Z] download ok [20/64] 568e0b4e-990f-4a99-9317-62d409566e4a 2219KB in 7163ms
+[2026-05-14T04:50:57Z] download ok [25/64] 0f759720-dd35-4168-9b45-7703811c1fc0 3049KB in 2444ms
+[2026-05-14T04:50:58Z] download ok [30/64] 8d65c1fb-bcfd-47ab-b5fd-7dbbaccf6318 958KB in 2174ms
+[2026-05-14T04:51:00Z] download ok [35/64] f1603518-5e46-4e3f-a949-699207afd883 742KB in 1970ms
+[2026-05-14T04:51:01Z] download ok [40/64] 60090ed9-478a-45ea-9418-90b4a3625d4b 387KB in 1336ms
+[2026-05-14T04:51:02Z] download ok [45/64] 22fbfb2b-e1d3-4418-af75-288299c1e571 913KB in 3473ms
+[2026-05-14T04:51:03Z] download ok [50/64] 6f61d53a-77f0-4b15-8c7b-613ac156a419 707KB in 1626ms
+[2026-05-14T04:51:04Z] download heartbeat: done=52/64 ok=52 failed=0 in_flight=12 ~3.5 ok/s avg=2736ms total=67.5MB
+[2026-05-14T04:51:05Z] download ok [55/64] 16cb9385-c2f6-447e-84fe-b1f070fac5e2 1848KB in 3592ms
+[2026-05-14T04:51:06Z] download ok [60/64] 95385baf-8ea1-4c52-8d6e-85978f6084e7 2429KB in 3572ms
+[2026-05-14T04:51:06Z] download ok [64/64] 8540e94b-84cc-4bc7-985f-2f31f8ad055e 2534KB in 7820ms
+[2026-05-14T04:51:06Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:51:06Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:51:08Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=465ms db=703ms
+[2026-05-14T04:51:08Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:51:09Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=472ms db=682ms
+[2026-05-14T04:51:09Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=640
+[2026-05-14T04:51:09Z] Fetched 64 rows from DB
+[2026-05-14T04:51:11Z] download ok [1/64] 1e21da40-15a2-4429-b72e-76e2398b9500 210KB in 2087ms
+[2026-05-14T04:51:11Z] download ok [2/64] b87a13a4-1217-4856-a1ef-ab4115503c1b 306KB in 2110ms
+[2026-05-14T04:51:11Z] download ok [3/64] 9967dd0f-d1f2-41d8-ae8c-bfd840a77277 1431KB in 2496ms
+[2026-05-14T04:51:11Z] download ok [4/64] b90d7595-635e-422b-9ee4-8476c6327b69 390KB in 2549ms
+[2026-05-14T04:51:11Z] download ok [5/64] e9d9ada8-6b6f-489c-a77d-ea35865bb960 430KB in 2673ms
+[2026-05-14T04:51:13Z] download ok [10/64] 58e83f74-18c6-4e6e-87dc-b1a88a704e33 1773KB in 3992ms
+[2026-05-14T04:51:14Z] download ok [15/64] a356d57c-e030-4124-8436-4aa3b8e21460 1659KB in 4918ms
+[2026-05-14T04:51:15Z] download ok [20/64] 0d86d58b-8093-4d26-891d-d31745ee07ed 1621KB in 5757ms
+[2026-05-14T04:51:16Z] download ok [25/64] efcad8f5-5793-4794-beb4-79fd7b3c99fa 459KB in 2208ms
+[2026-05-14T04:51:18Z] download ok [30/64] 47236d11-589b-4816-b888-2011495cd176 2015KB in 4665ms
+[2026-05-14T04:51:19Z] download ok [35/64] f72e456e-4eee-4ade-9859-00d0af5167a2 2508KB in 4041ms
+[2026-05-14T04:51:21Z] download ok [40/64] 78989be2-f124-469a-9ffa-f206f7ad07e7 920KB in 4421ms
+[2026-05-14T04:51:22Z] download ok [45/64] 1905f065-7502-46d8-9ea8-71bc354581d6 1067KB in 3847ms
+[2026-05-14T04:51:23Z] download ok [50/64] 56164580-a941-4f23-8e25-ffbd7f46a5ee 1368KB in 4577ms
+[2026-05-14T04:51:23Z] download ok [55/64] a8d9cae9-55a1-4b73-b0dc-614d72792d8a 353KB in 1297ms
+[2026-05-14T04:51:24Z] download heartbeat: done=56/64 ok=56 failed=0 in_flight=8 ~3.7 ok/s avg=2906ms total=69.4MB
+[2026-05-14T04:51:25Z] download ok [60/64] e81a0cd9-c486-420e-90ac-04d27975b8aa 3039KB in 2882ms
+[2026-05-14T04:51:25Z] download ok [64/64] 0325934b-e812-4a6d-8190-68f88d3af14c 2373KB in 2421ms
+[2026-05-14T04:51:25Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:51:25Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:51:27Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=447ms db=693ms
+[2026-05-14T04:51:27Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:51:28Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=473ms db=692ms
+[2026-05-14T04:51:28Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=704
+[2026-05-14T04:51:28Z] Fetched 64 rows from DB
+[2026-05-14T04:51:29Z] download ok [1/64] b2272e0d-fee8-4700-ab90-d01d2ffaa693 696KB in 1148ms
+[2026-05-14T04:51:30Z] download ok [2/64] d69e1749-4495-4704-9e04-076818cfaee8 1588KB in 1801ms
+[2026-05-14T04:51:30Z] download ok [3/64] 9efaab05-63c2-41ff-9c9d-1bb2c5c69bdb 397KB in 2267ms
+[2026-05-14T04:51:30Z] download ok [4/64] f99c4714-71d8-464e-aae7-561c03825c55 286KB in 1211ms
+[2026-05-14T04:51:31Z] download ok [5/64] aa342842-cb47-49a5-9a17-30b3ae97217b 841KB in 2699ms
+[2026-05-14T04:51:31Z] download ok [10/64] 3c2ccd48-d9ba-4f54-adb1-fb751a53e7d6 669KB in 3198ms
+[2026-05-14T04:51:32Z] download ok [15/64] 78f7f19a-f2f7-4be1-ae55-b16362e80ebf 728KB in 1684ms
+[2026-05-14T04:51:33Z] download ok [20/64] c0bfecb5-c7da-483a-851e-327c15118461 914KB in 2495ms
+[2026-05-14T04:51:34Z] download ok [25/64] 89bd989c-6d09-4b6a-b9c8-84ae08fc5ed0 1287KB in 2764ms
+[2026-05-14T04:51:35Z] download ok [30/64] 59c1a5f6-75ba-41a9-972f-5b9d5b84c863 2136KB in 2830ms
+[2026-05-14T04:51:36Z] download ok [35/64] 7d19911c-182c-46cd-bb06-c0bd44f056d6 118KB in 1014ms
+[2026-05-14T04:51:37Z] download ok [40/64] e632c302-d4de-4554-b3a3-5c4058741085 877KB in 1572ms
+[2026-05-14T04:51:38Z] download ok [45/64] 54605d69-b002-4a1a-9210-753d74b89822 1508KB in 1860ms
+[2026-05-14T04:51:38Z] download ok [50/64] 830cbf80-4f3f-4142-8ca9-02ec145afc2d 1379KB in 4074ms
+[2026-05-14T04:51:40Z] download ok [55/64] 87b1b1d8-06f8-465b-9d40-19ae3c64d910 979KB in 2427ms
+[2026-05-14T04:51:42Z] download ok [60/64] 0492a86f-b905-40f1-92e5-3c48d8ae289e 2232KB in 3730ms
+[2026-05-14T04:51:42Z] download ok [64/64] a29a4294-ffc5-474e-a680-2bee20b7b37d 2488KB in 4055ms
+[2026-05-14T04:51:42Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:51:42Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:51:43Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=432ms db=701ms
+[2026-05-14T04:51:43Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:51:44Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=411ms db=737ms
+[2026-05-14T04:51:44Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=768
+[2026-05-14T04:51:44Z] Fetched 64 rows from DB
+[2026-05-14T04:51:46Z] download ok [1/64] ea892969-7f71-4a1e-a008-d2e9588b6c0a 1590KB in 1609ms
+[2026-05-14T04:51:47Z] download ok [2/64] 32f3c369-b16c-46dc-b89b-e51e3949fa1e 541KB in 3191ms
+[2026-05-14T04:51:47Z] download ok [3/64] eb07d6de-23a5-4323-8376-1ba2325cae25 1344KB in 3318ms
+[2026-05-14T04:51:47Z] download ok [4/64] 3bafb350-e146-48cd-9f3a-499fae21f114 1118KB in 3392ms
+[2026-05-14T04:51:48Z] download ok [5/64] e5b1e3ae-75e7-446c-ac64-92705636049d 1620KB in 2357ms
+[2026-05-14T04:51:50Z] download ok [10/64] 5faf727f-59fb-432e-8be9-a57fa5247b0f 2461KB in 5709ms
+[2026-05-14T04:51:51Z] download ok [15/64] 4084ef5e-dabd-4348-bfcb-f65a772b15c2 2076KB in 2934ms
+[2026-05-14T04:51:52Z] download ok [20/64] b22bfbfb-72c9-4a04-95f8-50d45d6aa73c 1538KB in 8281ms
+[2026-05-14T04:51:53Z] download ok [25/64] 4716f752-0160-4348-91b9-43a3b3ae0796 2680KB in 2261ms
+[2026-05-14T04:51:54Z] download ok [30/64] 777fe142-3df9-4303-a1d1-c7fc7f31100d 2593KB in 10268ms
+[2026-05-14T04:51:55Z] download ok [35/64] 3d983a25-d6f1-4857-898e-321efd596c29 1337KB in 2043ms
+[2026-05-14T04:51:56Z] download ok [40/64] 2f9cbd34-fcd0-4eca-8d4e-b01ac7e0e8f3 624KB in 1655ms
+[2026-05-14T04:51:58Z] download ok [45/64] df8539c8-e4e7-40c2-a54e-b16b4c584a4b 166KB in 2153ms
+[2026-05-14T04:51:59Z] download ok [50/64] d57b30d7-b0b6-4321-a5dc-a231bde7e266 1613KB in 3634ms
+[2026-05-14T04:51:59Z] download heartbeat: done=51/64 ok=51 failed=0 in_flight=13 ~3.4 ok/s avg=3170ms total=71.2MB
+[2026-05-14T04:52:00Z] download ok [55/64] 20842cf7-11c3-4d6f-a95f-0eaa91ab559e 1402KB in 3090ms
+[2026-05-14T04:52:01Z] download ok [60/64] 1eeb0598-e646-46c6-a601-6d9bd5b4c6f6 1664KB in 2510ms
+[2026-05-14T04:52:01Z] download ok [64/64] 99c15724-5fe7-4390-98ef-a76eea248060 2354KB in 2775ms
+[2026-05-14T04:52:01Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:52:01Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:52:03Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=593ms db=723ms
+[2026-05-14T04:52:03Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:52:04Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=584ms db=779ms
+[2026-05-14T04:52:04Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=832
+[2026-05-14T04:52:04Z] Fetched 64 rows from DB
+[2026-05-14T04:52:06Z] download ok [1/64] 0dbead44-738f-4944-a73f-1c97c243ec77 221KB in 2058ms
+[2026-05-14T04:52:06Z] download ok [2/64] e5bb1d87-d402-45b0-a44b-ccf5b7c4eb81 332KB in 2068ms
+[2026-05-14T04:52:06Z] download ok [3/64] d010fb9a-8404-40d5-83a9-879c04578214 275KB in 2332ms
+[2026-05-14T04:52:06Z] download ok [4/64] e5a3001e-57ba-4a37-9b86-6bb189b4289b 370KB in 2374ms
+[2026-05-14T04:52:08Z] download ok [5/64] 8525cce3-a7da-412e-a5f5-4c6bd931ad3e 408KB in 1156ms
+[2026-05-14T04:52:10Z] download ok [10/64] f79beefc-1029-44e2-ad9a-ca83d5e37e55 2811KB in 2205ms
+[2026-05-14T04:52:10Z] download ok [15/64] e56615bd-3ece-4206-98dd-e10aaf8d650a 1593KB in 6323ms
+[2026-05-14T04:52:12Z] download ok [20/64] 27434034-a80a-4629-b868-5b5f9a962b04 1169KB in 1888ms
+[2026-05-14T04:52:13Z] download ok [25/64] 5a763020-60d2-44dd-be82-4d4ee6a423e9 1475KB in 2156ms
+[2026-05-14T04:52:14Z] download ok [30/64] 383423d6-e0a6-4a23-b312-8860037c9f64 1483KB in 2224ms
+[2026-05-14T04:52:15Z] download ok [35/64] 9deae5e0-fa30-4d48-accd-6ebcb0efe5e9 1918KB in 2067ms
+[2026-05-14T04:52:16Z] download ok [40/64] 9b6151bb-746d-4881-aa64-646e1886a47d 2512KB in 2261ms
+[2026-05-14T04:52:19Z] download ok [45/64] 177be5d7-175e-424a-8940-46cf1dbdf21d 2495KB in 3227ms
+[2026-05-14T04:52:19Z] download heartbeat: done=46/64 ok=46 failed=0 in_flight=18 ~3.1 ok/s avg=2539ms total=61.2MB
+[2026-05-14T04:52:20Z] download ok [50/64] 569a7f72-f8b3-45e9-96a9-77f03bd3529d 2548KB in 5449ms
+[2026-05-14T04:52:21Z] download ok [55/64] 5ec9df78-6445-4195-85a4-85060bc3b4b5 691KB in 1898ms
+[2026-05-14T04:52:22Z] download ok [60/64] 94b66bc9-cf61-435c-8161-ca196744ec9f 403KB in 1505ms
+[2026-05-14T04:52:22Z] download ok [64/64] a819e0f2-a416-4ef5-886c-30026e6878d8 3464KB in 2544ms
+[2026-05-14T04:52:22Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:52:22Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:52:24Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=449ms db=1540ms
+[2026-05-14T04:52:24Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:52:26Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=409ms db=1176ms
+[2026-05-14T04:52:26Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=896
+[2026-05-14T04:52:27Z] Fetched 64 rows from DB
+[2026-05-14T04:52:29Z] download ok [1/64] afc12fa2-3754-43a1-b829-93a5714b3d98 216KB in 2091ms
+[2026-05-14T04:52:29Z] download ok [2/64] 95c5650f-4f65-4055-af34-2e2359177a6d 304KB in 2432ms
+[2026-05-14T04:52:29Z] download ok [3/64] af7b0023-f09a-47bd-8c54-2e710356ec65 1678KB in 2441ms
+[2026-05-14T04:52:29Z] download ok [4/64] a3400bee-1cc4-46e4-afc4-84589a07a368 733KB in 2608ms
+[2026-05-14T04:52:29Z] download ok [5/64] de053f75-32e1-47c2-945c-e7405c8f5a4b 672KB in 2782ms
+[2026-05-14T04:52:31Z] download ok [10/64] 368b8e86-9bad-4666-8281-8df342a7bc89 1556KB in 4520ms
+[2026-05-14T04:52:32Z] download ok [15/64] ccb4d7ab-1c9e-411a-bcfb-2a16827690cd 1783KB in 5765ms
+[2026-05-14T04:52:33Z] download ok [20/64] 1f84a505-e012-47f5-83b6-38522864d326 249KB in 1488ms
+[2026-05-14T04:52:35Z] download ok [25/64] 385cb561-45c3-4c88-ac10-40da8a1ec2da 340KB in 1384ms
+[2026-05-14T04:52:36Z] download ok [30/64] 5724ee70-af4c-4aa6-a155-ea9f5154818f 2635KB in 3587ms
+[2026-05-14T04:52:38Z] download ok [35/64] fa0c832b-7d96-4ae0-a844-d1118ad05a17 2416KB in 4067ms
+[2026-05-14T04:52:39Z] download ok [40/64] a2c269e7-9221-4495-8fd6-f675c372bda6 518KB in 2316ms
+[2026-05-14T04:52:41Z] download ok [45/64] 9e4d84f5-5ccb-415d-b04f-6cbfcf1e17d5 3042KB in 5257ms
+[2026-05-14T04:52:42Z] download heartbeat: done=45/64 ok=45 failed=0 in_flight=19 ~3.0 ok/s avg=3389ms total=66.8MB
+[2026-05-14T04:52:43Z] download ok [50/64] 6d76f88b-ba22-4a33-bf98-36eabc47c1ab 335KB in 2611ms
+[2026-05-14T04:52:44Z] download ok [55/64] bcd6d78d-c63f-4020-8b64-4d3937c58538 627KB in 3165ms
+[2026-05-14T04:52:45Z] download ok [60/64] 7daa289d-3cad-47c7-809c-7fc9b5e27c5c 561KB in 1413ms
+[2026-05-14T04:52:46Z] download ok [64/64] 395be1c8-3480-44a4-883c-8ceff3a0265f 2909KB in 3267ms
+[2026-05-14T04:52:46Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:52:46Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:52:48Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=462ms db=1078ms
+[2026-05-14T04:52:48Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:52:49Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=471ms db=1115ms
+[2026-05-14T04:52:49Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=960
+[2026-05-14T04:52:49Z] Fetched 64 rows from DB
+[2026-05-14T04:52:51Z] download ok [1/64] 1eefe879-80c4-41e0-852f-0fd8cb8a913f 385KB in 1812ms
+[2026-05-14T04:52:52Z] download ok [2/64] e5a26aeb-3f9a-47a2-9602-560d2f17f440 364KB in 2488ms
+[2026-05-14T04:52:52Z] download ok [3/64] 49e1c3d6-915c-4f6e-95a8-e221673adf40 547KB in 2494ms
+[2026-05-14T04:52:52Z] download ok [4/64] 7c470a82-b6be-4955-8a8d-8a2731f8c8ab 403KB in 2570ms
+[2026-05-14T04:52:52Z] download ok [5/64] 248de71b-e6bc-48a9-901f-fdeb5548b37e 410KB in 2584ms
+[2026-05-14T04:52:52Z] download ok [10/64] 1c2b7774-8567-4505-9d2e-75a761d566bd 1264KB in 1425ms
+[2026-05-14T04:52:54Z] download ok [15/64] ca275c1f-cfe8-4d6b-8323-89755b3be386 1741KB in 2501ms
+[2026-05-14T04:52:55Z] download ok [20/64] 42fd457e-0308-4bfe-af52-9f219479390b 1463KB in 5545ms
+[2026-05-14T04:52:56Z] download ok [25/64] 238995d9-c561-4243-8fb0-677bab9711fa 1046KB in 3753ms
+[2026-05-14T04:52:57Z] download ok [30/64] 4d44f940-585e-4799-a92b-220630da1090 2001KB in 2003ms
+[2026-05-14T04:52:58Z] download ok [35/64] 23a0ba63-c81a-4075-a7b3-06841fead9ef 1620KB in 5743ms
+[2026-05-14T04:53:00Z] download ok [40/64] 5094244e-d851-472e-bf34-95618e801662 4550KB in 4893ms
+[2026-05-14T04:53:01Z] download ok [45/64] 98fc0a8e-5e5c-434b-81aa-120c740a6391 1683KB in 6464ms
+[2026-05-14T04:53:02Z] download ok [50/64] 3f4a77a3-e38b-4143-a1d0-0c7be1680af7 1354KB in 2309ms
+[2026-05-14T04:53:03Z] download ok [55/64] a4e416d3-6aeb-420e-a6dd-b1bb186c39f1 1323KB in 3131ms
+[2026-05-14T04:53:04Z] download heartbeat: done=58/64 ok=58 failed=0 in_flight=6 ~3.9 ok/s avg=2681ms total=69.0MB
+[2026-05-14T04:53:04Z] download ok [60/64] b3deb9de-3040-40b8-934b-1c859e7578c2 1122KB in 2473ms
+[2026-05-14T04:53:05Z] download ok [64/64] 6d7a36d1-adec-44c2-951a-2ab20322b75a 3733KB in 10735ms
+[2026-05-14T04:53:05Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:53:05Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:53:06Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=444ms db=701ms
+[2026-05-14T04:53:06Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:53:08Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=479ms db=703ms
+[2026-05-14T04:53:08Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=1024
+[2026-05-14T04:53:08Z] Fetched 64 rows from DB
+[2026-05-14T04:53:10Z] download ok [1/64] 581748f1-385f-478e-a492-1d9b49839fc5 200KB in 1818ms
+[2026-05-14T04:53:10Z] download ok [2/64] 0fb78ec4-c1e0-4f0a-81e9-bdc24a18cdce 407KB in 2304ms
+[2026-05-14T04:53:11Z] download ok [3/64] 43436418-ab25-4748-87b7-569fd74ae0ac 1570KB in 2795ms
+[2026-05-14T04:53:11Z] download ok [4/64] 69dcd885-08f1-489e-a57f-f58705c7c854 496KB in 2815ms
+[2026-05-14T04:53:11Z] download ok [5/64] d8451ac4-f47c-45e7-be2e-e98f2d33d679 662KB in 3035ms
+[2026-05-14T04:53:11Z] download ok [10/64] c89e0b32-fedf-4793-9632-b1b93721d031 872KB in 3693ms
+[2026-05-14T04:53:13Z] download ok [15/64] 9402281f-282c-4862-bef6-f7e845b0eb98 1185KB in 1916ms
+[2026-05-14T04:53:13Z] download ok [20/64] eaaf5da5-2d7a-42c0-bc8f-47b79dcf5fc2 731KB in 1592ms
+[2026-05-14T04:53:14Z] download ok [25/64] 0304b579-e12f-4905-9452-b525b24ff618 391KB in 1024ms
+[2026-05-14T04:53:15Z] download ok [30/64] 47d94533-e3f7-4d13-8687-b38197a9aebf 1848KB in 1746ms
+[2026-05-14T04:53:16Z] download ok [35/64] 3f04abfc-2e79-4489-8578-57d7b467f49b 2335KB in 2337ms
+[2026-05-14T04:53:17Z] download ok [40/64] 949de16f-1fe8-4db4-b867-7bf286867e48 1955KB in 6014ms
+[2026-05-14T04:53:17Z] download ok [45/64] 86cc36ee-9724-4a3e-84ac-616d0a849ae0 452KB in 1745ms
+[2026-05-14T04:53:18Z] download ok [50/64] c1a04137-adc3-46e3-b71c-3fc62d255f68 446KB in 1071ms
+[2026-05-14T04:53:18Z] download ok [55/64] 2d08201e-4365-405b-9bd0-fd5584d7b406 401KB in 1044ms
+[2026-05-14T04:53:20Z] download ok [60/64] addc47a6-3c52-41bf-9e51-9cb7caa16cab 2535KB in 2069ms
+[2026-05-14T04:53:21Z] download ok [64/64] d1bfbc27-a885-493d-b3b0-34ce856944b6 3686KB in 13526ms
+[2026-05-14T04:53:21Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:53:21Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:53:22Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=373ms db=696ms
+[2026-05-14T04:53:22Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:53:24Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=370ms db=801ms
+[2026-05-14T04:53:24Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=1088
+[2026-05-14T04:53:24Z] Fetched 64 rows from DB
+[2026-05-14T04:53:25Z] download ok [1/64] e62e9848-a12e-4151-9419-605f4a470280 443KB in 1472ms
+[2026-05-14T04:53:25Z] download ok [2/64] 227d75ff-f713-4590-811b-9dc6e5d96bb3 289KB in 1593ms
+[2026-05-14T04:53:25Z] download ok [3/64] 4acbee50-a1c0-450e-b904-3d1c63cd5768 275KB in 1835ms
+[2026-05-14T04:53:26Z] download ok [4/64] 3b044fd5-4336-4781-b9cb-9aa16ef6d8ef 327KB in 2031ms
+[2026-05-14T04:53:26Z] download ok [5/64] ad2e0aaa-d5d5-4ef2-b69d-21f2f9e95185 511KB in 2144ms
+[2026-05-14T04:53:27Z] download ok [10/64] 98347e3e-29af-4d91-8720-8f667574a554 1149KB in 2087ms
+[2026-05-14T04:53:28Z] download ok [15/64] 32bf8d3b-9020-4495-b916-671cac767222 242KB in 1109ms
+[2026-05-14T04:53:29Z] download ok [20/64] 401cbbf3-01a2-4a8e-8247-c608e04c3787 1360KB in 1929ms
+[2026-05-14T04:53:30Z] download ok [25/64] f676aea8-89a7-417d-8efc-22cf1192fc3a 159KB in 1449ms
+[2026-05-14T04:53:31Z] download ok [30/64] f93af62c-be6f-449f-bc04-5d512526a9c9 2275KB in 7268ms
+[2026-05-14T04:53:31Z] download ok [35/64] bc9ced7a-db35-4899-acbb-a4a6d28f64e0 2297KB in 6122ms
+[2026-05-14T04:53:32Z] download ok [40/64] e7d14498-db6f-43dc-ac23-eae2987ed76f 1272KB in 1649ms
+[2026-05-14T04:53:33Z] download ok [45/64] ffbc672a-5804-463a-9edb-95baf7940e90 261KB in 1527ms
+[2026-05-14T04:53:34Z] download ok [50/64] 47e43122-28aa-42cd-8d31-782aa54d7062 372KB in 1502ms
+[2026-05-14T04:53:35Z] download ok [55/64] 4108ce57-2093-4f81-8df0-35b9ebd6a0f9 1061KB in 2149ms
+[2026-05-14T04:53:36Z] download ok [60/64] 2513951c-1b2c-43ee-8131-dd5efd55b88a 1300KB in 2332ms
+[2026-05-14T04:53:37Z] download ok [64/64] a45eccbc-a669-49ac-8095-87602ec23a16 1262KB in 3238ms
+[2026-05-14T04:53:37Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:53:37Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:53:38Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=416ms db=712ms
+[2026-05-14T04:53:38Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:53:39Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=421ms db=723ms
+[2026-05-14T04:53:39Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=1152
+[2026-05-14T04:53:39Z] Fetched 64 rows from DB
+[2026-05-14T04:53:41Z] download ok [1/64] c083a7b6-f04b-45ed-a399-3133560896c0 459KB in 1566ms
+[2026-05-14T04:53:41Z] download ok [2/64] 770caa35-0520-4534-8d63-0acb42f98a3c 333KB in 1637ms
+[2026-05-14T04:53:41Z] download ok [3/64] 3c4b3263-5061-4951-a8a8-709d6abdc172 243KB in 1753ms
+[2026-05-14T04:53:41Z] download ok [4/64] ae30193a-f379-475c-9a79-be9de5ec14bd 378KB in 2212ms
+[2026-05-14T04:53:42Z] download ok [5/64] 53051b55-ec3b-413f-bf79-20ce8387ee53 950KB in 2418ms
+[2026-05-14T04:53:43Z] download ok [10/64] 2df444ff-b84e-4fbc-8fc8-82a4a59c8770 637KB in 3465ms
+[2026-05-14T04:53:43Z] download ok [15/64] dec9e292-900c-44de-bc61-80ba8434b9a2 1132KB in 2177ms
+[2026-05-14T04:53:45Z] download ok [20/64] bf0344ce-a2fb-4858-acd1-79f9dfaa262b 2082KB in 2225ms
+[2026-05-14T04:53:46Z] download ok [25/64] 8e7c9470-7d7e-4310-ad2d-b9e7b4180477 783KB in 2501ms
+[2026-05-14T04:53:47Z] download ok [30/64] b0d5f9a3-e56f-459f-a332-858568149f83 434KB in 1725ms
+[2026-05-14T04:53:48Z] download ok [35/64] 9f760183-f8f2-44c8-9e4e-ba13c91fc125 1206KB in 2308ms
+[2026-05-14T04:53:49Z] download ok [40/64] 0cbfc49c-66e6-41af-a198-c1275c352304 327KB in 1885ms
+[2026-05-14T04:53:50Z] download ok [45/64] 742b0d16-4df3-41f5-85bb-5f601688a187 1885KB in 2491ms
+[2026-05-14T04:53:51Z] download ok [50/64] b2e84547-2035-422b-9f44-2ba7cb37d153 1237KB in 2339ms
+[2026-05-14T04:53:52Z] download ok [55/64] 6ed2581d-bb2a-490f-aa58-f147e2272e70 394KB in 1286ms
+[2026-05-14T04:53:53Z] download ok [60/64] a928ae5e-b64b-4ea3-9650-860dd8b1e47a 1474KB in 1798ms
+[2026-05-14T04:53:53Z] download ok [64/64] 3c482cd9-9030-44ec-85e1-eb58c45e51d1 1945KB in 2081ms
+[2026-05-14T04:53:53Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:53:53Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:53:54Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=423ms db=702ms
+[2026-05-14T04:53:54Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:53:56Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=436ms db=685ms
+[2026-05-14T04:53:56Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=1216
+[2026-05-14T04:53:56Z] Fetched 64 rows from DB
+[2026-05-14T04:53:57Z] download ok [1/64] 620789c6-f5d1-4ebe-97ef-eeec71cbf4ed 467KB in 1682ms
+[2026-05-14T04:53:58Z] download ok [2/64] 1544abdd-8ca1-4df9-a1b6-1ac0d9e32e3c 177KB in 2048ms
+[2026-05-14T04:53:58Z] download ok [3/64] 508a73f2-7fd8-433e-8f71-d4e0eacc0b78 183KB in 2158ms
+[2026-05-14T04:53:59Z] download ok [4/64] 043e99dd-b075-46e8-8941-f837951e77a1 1422KB in 3226ms
+[2026-05-14T04:53:59Z] download ok [5/64] b2940035-d459-4940-9035-a834bb46eccc 111KB in 1093ms
+[2026-05-14T04:53:59Z] download ok [10/64] 64589556-1c96-4289-b503-76bd608ac95e 831KB in 3781ms
+[2026-05-14T04:54:00Z] download ok [15/64] 1847c698-aa42-4a8d-b106-660718cb230e 323KB in 1253ms
+[2026-05-14T04:54:01Z] download ok [20/64] 1d64e974-2ec0-45bd-a4c4-1e29c4c7be5e 392KB in 1117ms
+[2026-05-14T04:54:02Z] download ok [25/64] af2626bd-e920-4ac0-85a5-997c872fce11 309KB in 1303ms
+[2026-05-14T04:54:03Z] download ok [30/64] 7b170fc1-5181-4a92-9595-33d6982a281d 3603KB in 2710ms
+[2026-05-14T04:54:05Z] download ok [35/64] 35303717-4dd0-4ee6-8a4c-9933879f78cb 1134KB in 2511ms
+[2026-05-14T04:54:06Z] download ok [40/64] 3550d559-9676-4a89-8b0f-acb1521c8810 2135KB in 2985ms
+[2026-05-14T04:54:06Z] download ok [45/64] 904b716a-d656-4778-a904-e628bdf1bd31 1798KB in 6965ms
+[2026-05-14T04:54:08Z] download ok [50/64] b476eda7-6c74-4167-aa79-f271aa1eaf29 406KB in 1394ms
+[2026-05-14T04:54:10Z] download ok [55/64] 56bf5ae1-c8f0-4b1b-a124-266addef8997 2536KB in 3403ms
+[2026-05-14T04:54:11Z] download heartbeat: done=59/64 ok=59 failed=0 in_flight=5 ~3.9 ok/s avg=2477ms total=63.7MB
+[2026-05-14T04:54:11Z] download ok [60/64] 72e78d23-b299-4d30-8587-11bdbd7c3981 2545KB in 4418ms
+[2026-05-14T04:54:12Z] download ok [64/64] 1940cf7e-aa48-43dc-b69d-b82f0cd444e1 3189KB in 5271ms
+[2026-05-14T04:54:12Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:54:12Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:54:13Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=538ms db=718ms
+[2026-05-14T04:54:13Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:54:14Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=453ms db=729ms
+[2026-05-14T04:54:14Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=1280
+[2026-05-14T04:54:14Z] Fetched 64 rows from DB
+[2026-05-14T04:54:16Z] download ok [1/64] 58b1967e-d371-4924-8fa6-34e3f3a51b67 219KB in 1968ms
+[2026-05-14T04:54:17Z] download ok [2/64] cd282fb5-75d0-4df6-bfc6-0808f174b129 165KB in 2169ms
+[2026-05-14T04:54:17Z] download ok [3/64] 9658ea6f-85bc-4069-879f-c22db9e5fee5 1177KB in 2627ms
+[2026-05-14T04:54:17Z] download ok [4/64] 9b76d53c-6ede-493b-927e-800ccec736df 778KB in 2866ms
+[2026-05-14T04:54:18Z] download ok [5/64] 80916196-8545-48fc-bec8-c552fa365094 1399KB in 3504ms
+[2026-05-14T04:54:19Z] download ok [10/64] ea37613f-7915-4295-a2da-5e3a8f44dfeb 860KB in 2028ms
+[2026-05-14T04:54:20Z] download ok [15/64] ad56c769-4c01-44fa-97ec-58c8eaef345e 323KB in 1606ms
+[2026-05-14T04:54:21Z] download ok [20/64] f0da6c94-34bb-4488-aa37-85dc99231a8c 1682KB in 6588ms
+[2026-05-14T04:54:22Z] download ok [25/64] b8556658-0fd3-4771-b427-aa6f8875b845 637KB in 1231ms
+[2026-05-14T04:54:23Z] download ok [30/64] 568af763-cacc-4228-9e2c-d242337109c7 1459KB in 1800ms
+[2026-05-14T04:54:24Z] download ok [35/64] 345e99ac-ee82-4aa2-8960-9ab4f0368b4c 252KB in 1386ms
+[2026-05-14T04:54:26Z] download ok [40/64] ab27c0b4-928c-4e10-a93f-a848b3bcf19b 2027KB in 2672ms
+[2026-05-14T04:54:26Z] download ok [45/64] fb8c0b04-5b23-4552-8354-c6a63cf4ae5c 145KB in 926ms
+[2026-05-14T04:54:27Z] download ok [50/64] 7bd36442-edc9-41c1-bc5c-e76f0f849267 2175KB in 3109ms
+[2026-05-14T04:54:29Z] download ok [55/64] a3e3d19c-a1d0-4c24-b2cf-dda9103e8399 226KB in 1300ms
+[2026-05-14T04:54:29Z] download heartbeat: done=58/64 ok=58 failed=0 in_flight=6 ~3.9 ok/s avg=2386ms total=65.6MB
+[2026-05-14T04:54:30Z] download ok [60/64] ddf2527d-eb93-4435-9d27-51217150c4b0 1471KB in 2129ms
+[2026-05-14T04:54:30Z] download ok [64/64] 18afbb02-2b9e-4ab6-b029-1ef97db0503c 3518KB in 15878ms
+[2026-05-14T04:54:30Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:54:30Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:54:32Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=429ms db=850ms
+[2026-05-14T04:54:32Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:54:33Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=422ms db=723ms
+[2026-05-14T04:54:33Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=1344
+[2026-05-14T04:54:33Z] Fetched 64 rows from DB
+[2026-05-14T04:54:34Z] download ok [1/64] 2cf928a6-3931-4478-863d-bb12b162770e 313KB in 1177ms
+[2026-05-14T04:54:34Z] download ok [2/64] e220fd3c-17ba-4621-9742-ea307fe53c82 607KB in 1373ms
+[2026-05-14T04:54:35Z] download ok [3/64] 8cbf2a01-2683-416f-9d40-dfe0af2d2cb3 428KB in 1821ms
+[2026-05-14T04:54:35Z] download ok [4/64] 56e6d4d8-f2b6-4b18-9221-499a08bd6b0d 377KB in 2081ms
+[2026-05-14T04:54:36Z] download ok [5/64] 47b0bfd8-5445-49f1-93e0-8a8e599bf119 523KB in 1334ms
+[2026-05-14T04:54:37Z] download ok [10/64] f10d32d1-74e9-49ac-b340-b8ea71621152 1790KB in 1924ms
+[2026-05-14T04:54:38Z] download ok [15/64] e0f02b7e-6bc7-46a4-9a36-f7a7e722a158 1130KB in 3530ms
+[2026-05-14T04:54:39Z] download ok [20/64] 914e32c1-da57-471c-b5cb-0847f953f8b5 610KB in 1274ms
+[2026-05-14T04:54:40Z] download ok [25/64] 54d8aaa0-55c3-4959-94f5-909c58dc75a8 2885KB in 2741ms
+[2026-05-14T04:54:40Z] download ok [30/64] e6f8f54a-e463-48a3-b6bf-5554fcc7fbca 1737KB in 1907ms
+[2026-05-14T04:54:42Z] download ok [35/64] 57839518-d365-44fa-aada-0249e623a060 276KB in 1117ms
+[2026-05-14T04:54:43Z] download ok [40/64] 0fef7085-a5b9-46ae-9f21-b3ddf780aa58 675KB in 1636ms
+[2026-05-14T04:54:43Z] download ok [45/64] 33deced1-a6e6-4731-993a-4acaa8b4bbee 1486KB in 2059ms
+[2026-05-14T04:54:44Z] download ok [50/64] c5d977e1-5bd5-4baa-8589-0d8002879a0f 590KB in 1351ms
+[2026-05-14T04:54:45Z] download ok [55/64] 8f93d80e-23f9-4d4d-be7f-35bd5d78ca2c 1346KB in 2308ms
+[2026-05-14T04:54:46Z] download ok [60/64] ba2c2fc3-3c08-4f57-94f7-776c6d2feab6 2971KB in 13233ms
+[2026-05-14T04:54:47Z] download ok [64/64] 15a961ab-9531-40f8-bd6c-7fe2514de998 2629KB in 4209ms
+[2026-05-14T04:54:47Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:54:47Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:54:48Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=483ms db=705ms
+[2026-05-14T04:54:48Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:54:49Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=392ms db=703ms
+[2026-05-14T04:54:49Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=1408
+[2026-05-14T04:54:49Z] Fetched 64 rows from DB
+[2026-05-14T04:54:51Z] download ok [1/64] 24e6e72d-62b7-4d65-ab62-9252dc6a9e16 308KB in 2125ms
+[2026-05-14T04:54:51Z] download ok [2/64] 24775ed2-cf07-47d6-a5c7-09af3bcaf6bb 660KB in 2147ms
+[2026-05-14T04:54:52Z] download ok [3/64] e0987f7c-5356-4d96-93ab-ad0676bef619 549KB in 2557ms
+[2026-05-14T04:54:52Z] download ok [4/64] cd272dbe-6c52-42df-b913-1e996f5bfd31 326KB in 2567ms
+[2026-05-14T04:54:52Z] download ok [5/64] 7c182a27-4f6b-4877-a8e1-f974994c602a 693KB in 2765ms
+[2026-05-14T04:54:53Z] download ok [10/64] d7d40d8a-b321-486a-bb57-e58394c34daa 367KB in 1281ms
+[2026-05-14T04:54:54Z] download ok [15/64] ef9412c8-2ee3-4d6a-95c2-0341b8761a06 418KB in 1605ms
+[2026-05-14T04:54:54Z] download ok [20/64] 112b33cb-fd11-4eb8-9853-a1bbddc66123 346KB in 1684ms
+[2026-05-14T04:54:55Z] download ok [25/64] 2162cd4a-a4b1-4445-843b-4d5e60b0d3c1 435KB in 1682ms
+[2026-05-14T04:54:56Z] download ok [30/64] b7d82534-e382-4324-a6dc-d9bd73af5729 706KB in 1595ms
+[2026-05-14T04:54:57Z] download ok [35/64] 12e9c6e9-acce-47cd-9f57-22a14137e973 1823KB in 3142ms
+[2026-05-14T04:54:58Z] download ok [40/64] f48654da-78bd-40b9-808e-4afa8ff4cbab 1371KB in 2991ms
+[2026-05-14T04:54:59Z] download ok [45/64] a6e68456-eafe-4ac3-83c1-f87cb00cdde4 359KB in 1580ms
+[2026-05-14T04:55:00Z] download ok [50/64] 1257dcc7-7f58-4a24-a583-a03e017152ba 143KB in 1158ms
+[2026-05-14T04:55:01Z] download ok [55/64] 01984dfe-21c0-4d1a-9744-f65896473b0c 548KB in 1775ms
+[2026-05-14T04:55:02Z] download ok [60/64] e696d4e7-d214-49d8-a138-fa5c13142750 299KB in 1396ms
+[2026-05-14T04:55:03Z] download ok [64/64] 912f4de8-bd63-43ca-bf32-638854dcd971 2429KB in 3642ms
+[2026-05-14T04:55:03Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:55:03Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:55:04Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=391ms db=1211ms
+[2026-05-14T04:55:04Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:55:06Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=402ms db=1087ms
+[2026-05-14T04:55:06Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=1472
+[2026-05-14T04:55:06Z] Fetched 64 rows from DB
+[2026-05-14T04:55:07Z] download ok [1/64] d4f3e825-8e2f-4f22-8f86-f7854746b336 598KB in 1470ms
+[2026-05-14T04:55:08Z] download ok [2/64] d3a4f693-1041-4571-baf3-35cc128f462d 547KB in 1821ms
+[2026-05-14T04:55:08Z] download ok [3/64] c9af85e9-e610-4b0b-9462-667a7ec5f2cd 281KB in 2000ms
+[2026-05-14T04:55:08Z] download ok [4/64] bb0db990-ecae-40c8-95fa-efcfff6f0663 439KB in 2094ms
+[2026-05-14T04:55:08Z] download ok [5/64] 1ea31e73-0208-4a07-b7f3-e7b4d7fe196c 381KB in 2183ms
+[2026-05-14T04:55:09Z] download ok [10/64] 07a84bac-5ff1-4cf0-a956-072a2da138ed 1327KB in 3123ms
+[2026-05-14T04:55:10Z] download ok [15/64] 0b3905ad-8b00-4b86-a80a-0f65431a1061 698KB in 2171ms
+[2026-05-14T04:55:11Z] download ok [20/64] fb9b7bc1-b608-4190-b49d-5020483d7512 2114KB in 5345ms
+[2026-05-14T04:55:13Z] download ok [25/64] 2f3f85b3-8723-4fd3-9a57-ed2b9d276369 1785KB in 2472ms
+[2026-05-14T04:55:13Z] download ok [30/64] 2a054b3a-57b2-466a-94af-78d622474d9c 112KB in 625ms
+[2026-05-14T04:55:14Z] download ok [35/64] 1bd52d6c-da8d-4452-b382-7f6f1f9d6d79 1940KB in 4928ms
+[2026-05-14T04:55:15Z] download ok [40/64] 9e4bb305-14ec-45a4-ae69-aa6e9c59c785 545KB in 1557ms
+[2026-05-14T04:55:16Z] download ok [45/64] 52b61fd3-9a9c-4cdd-ad29-55ddf7e96509 1056KB in 1679ms
+[2026-05-14T04:55:17Z] download ok [50/64] 117b8530-69af-4951-b0b0-2729e9f4392a 1639KB in 2846ms
+[2026-05-14T04:55:18Z] download ok [55/64] e0920671-61f7-4877-8459-a2f0a2f34d94 330KB in 1337ms
+[2026-05-14T04:55:19Z] download ok [60/64] e31fbb2f-4c05-4659-940d-42b1b0192a7b 1420KB in 3178ms
+[2026-05-14T04:55:20Z] download ok [64/64] 50dc01cf-dee1-4f15-8629-82f74186b365 1117KB in 2632ms
+[2026-05-14T04:55:20Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:55:20Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:55:21Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=544ms db=1138ms
+[2026-05-14T04:55:21Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:55:23Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=628ms db=1037ms
+[2026-05-14T04:55:23Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=1536
+[2026-05-14T04:55:23Z] Fetched 64 rows from DB
+[2026-05-14T04:55:25Z] download ok [1/64] 8e3faf8d-f10d-4d03-a26c-8288fa5e592c 343KB in 1699ms
+[2026-05-14T04:55:25Z] download ok [2/64] 10395391-bf11-496d-9c02-fb2919cde25e 1727KB in 2187ms
+[2026-05-14T04:55:26Z] download ok [3/64] c71a7666-e741-4734-9d68-0528d0d0563d 721KB in 2592ms
+[2026-05-14T04:55:26Z] download ok [4/64] 13342871-4a3f-44af-b2d5-793cdeb14950 988KB in 2970ms
+[2026-05-14T04:55:26Z] download ok [5/64] 751edc40-ebc3-43dd-9253-76723b71bb5f 514KB in 1294ms
+[2026-05-14T04:55:27Z] download ok [10/64] fe94fee7-8015-4cf8-b063-9dca929cbebd 933KB in 3408ms
+[2026-05-14T04:55:27Z] download ok [15/64] d9f8950b-0c0b-480c-8969-e837ac472389 1234KB in 4036ms
+[2026-05-14T04:55:28Z] download ok [20/64] b6d44bba-687f-446c-aad5-2273e66676db 804KB in 1306ms
+[2026-05-14T04:55:28Z] download ok [25/64] 6b36150a-307c-41e1-8ea4-e56d0f004608 414KB in 1424ms
+[2026-05-14T04:55:30Z] download ok [30/64] d3de2314-2a4b-45d0-8ae2-e371351aaf74 1507KB in 2727ms
+[2026-05-14T04:55:31Z] download ok [35/64] 8fc43b1f-3a57-49fe-a20e-c98fbf446494 1065KB in 2866ms
+[2026-05-14T04:55:32Z] download ok [40/64] 7c60304b-ab35-4289-a692-b4d272ef4011 1145KB in 2214ms
+[2026-05-14T04:55:33Z] download ok [45/64] b9c363c1-a050-4fab-b6e9-cb30741eea76 621KB in 1817ms
+[2026-05-14T04:55:34Z] download ok [50/64] fab1e6f6-7c50-4925-b168-f28abca7ce17 1201KB in 2297ms
+[2026-05-14T04:55:35Z] download ok [55/64] dbce5890-7a30-493b-afbf-b7547d7bcb1d 1304KB in 2298ms
+[2026-05-14T04:55:36Z] download ok [60/64] 7d560799-9b01-4ee0-9283-c3f97e6a3871 1290KB in 2359ms
+[2026-05-14T04:55:36Z] download ok [64/64] 431554aa-3392-4f33-b705-9021f68aee6f 2322KB in 2198ms
+[2026-05-14T04:55:36Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:55:36Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:55:38Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=542ms db=703ms
+[2026-05-14T04:55:38Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:55:39Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=603ms db=699ms
+[2026-05-14T04:55:39Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=1600
+[2026-05-14T04:55:39Z] Fetched 64 rows from DB
+[2026-05-14T04:55:41Z] download ok [1/64] d616b856-63f3-4b5b-9393-f4f3ea72d971 1047KB in 1832ms
+[2026-05-14T04:55:43Z] download ok [2/64] fce75fce-ad80-47d5-a77d-0226dc159d3d 1448KB in 1695ms
+[2026-05-14T04:55:43Z] download ok [3/64] 58345b6c-b825-40ac-a708-aeeaae224923 1287KB in 3628ms
+[2026-05-14T04:55:43Z] download ok [4/64] aa8349ea-6a05-4e06-bd19-562a55defe27 914KB in 3632ms
+[2026-05-14T04:55:43Z] download ok [5/64] 7ebec3a1-2b1e-4cbf-8046-a7028af54a09 1172KB in 3929ms
+[2026-05-14T04:55:43Z] download ok [10/64] b3ae9d3d-181b-4242-9845-832800f4233e 1273KB in 4314ms
+[2026-05-14T04:55:44Z] download ok [15/64] 0d4842e1-63ef-4cbb-839c-a0eedfeaff6d 1838KB in 5384ms
+[2026-05-14T04:55:46Z] download ok [20/64] eab12ceb-99e1-479d-a3df-e7579b1fbff4 1088KB in 2730ms
+[2026-05-14T04:55:47Z] download ok [25/64] 53f806a3-c66c-4cfc-9326-e8a399dad3bb 1629KB in 2146ms
+[2026-05-14T04:55:47Z] download ok [30/64] b6567c37-ce0e-4d8e-a00b-1ba0a6f37a93 1396KB in 2343ms
+[2026-05-14T04:55:49Z] download ok [35/64] 1e239935-bd67-4de8-88d4-ab5aeadecb22 1358KB in 2300ms
+[2026-05-14T04:55:50Z] download ok [40/64] 117036b6-5e47-4cec-9f00-cd2e132d86ab 1087KB in 2440ms
+[2026-05-14T04:55:50Z] download ok [45/64] 6af55d3e-2c90-40e3-aca9-71ecf1c0eadd 991KB in 2330ms
+[2026-05-14T04:55:52Z] download ok [50/64] 766c318a-fbe0-4b3c-88f7-33cbe87bfd9f 418KB in 1630ms
+[2026-05-14T04:55:52Z] download ok [55/64] 2fa4f372-7b2d-4ec5-beee-53b4a1622a5e 1049KB in 2834ms
+[2026-05-14T04:55:53Z] download ok [60/64] c398254f-943b-4629-b5b9-ddf03c34a9c9 1585KB in 3152ms
+[2026-05-14T04:55:53Z] download ok [64/64] 6b7aaefd-9cee-4b99-9791-6c694160e8a8 1282KB in 1464ms
+[2026-05-14T04:55:53Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:55:53Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:55:55Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=518ms db=701ms
+[2026-05-14T04:55:55Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:55:56Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=526ms db=672ms
+[2026-05-14T04:55:56Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=1664
+[2026-05-14T04:55:56Z] Fetched 64 rows from DB
+[2026-05-14T04:55:57Z] download ok [1/64] c5a091e6-3f20-4970-8a58-ddc2e9a035c2 981KB in 1361ms
+[2026-05-14T04:55:58Z] download ok [2/64] c7044c8d-37ba-4269-b3b3-eebc6f4d9d50 484KB in 1668ms
+[2026-05-14T04:55:58Z] download ok [3/64] 58a26453-237e-4985-a091-95d2aa7417bf 578KB in 1948ms
+[2026-05-14T04:55:58Z] download ok [4/64] 8628003f-9855-49d1-b482-70c24858d742 444KB in 2091ms
+[2026-05-14T04:55:58Z] download ok [5/64] dcde8f35-f6ae-4137-936f-b95d411104e9 376KB in 1132ms
+[2026-05-14T04:55:59Z] download ok [10/64] 3d55443a-c839-4dae-89a5-90475e38f91b 866KB in 3142ms
+[2026-05-14T04:56:00Z] download ok [15/64] 1e822f49-f440-4df9-beea-b5f104b23709 457KB in 1706ms
+[2026-05-14T04:56:01Z] download ok [20/64] 47e08896-6c57-41df-963c-fc938aa772cf 2294KB in 2460ms
+[2026-05-14T04:56:03Z] download ok [25/64] 4161bb7d-522c-4e61-915c-20a7d3477da3 1859KB in 3018ms
+[2026-05-14T04:56:03Z] download ok [30/64] 454532b0-0bf5-45db-a0f6-cf582bbef5a8 1474KB in 3277ms
+[2026-05-14T04:56:04Z] download ok [35/64] ccca26cf-841d-455f-a3ac-5d5ccd8c1701 816KB in 1892ms
+[2026-05-14T04:56:05Z] download ok [40/64] f4d45be9-fdae-4eda-a2ba-4dc2a447d999 972KB in 2060ms
+[2026-05-14T04:56:06Z] download ok [45/64] a3158f8b-9921-4656-9b00-4fe375348209 1425KB in 2572ms
+[2026-05-14T04:56:07Z] download ok [50/64] 9a8c085c-0ba8-4c14-a0ec-467b82efa13a 1583KB in 2599ms
+[2026-05-14T04:56:08Z] download ok [55/64] 2935ada7-46a4-46d1-bd48-71401192dca6 1667KB in 2938ms
+[2026-05-14T04:56:09Z] download ok [60/64] a5b653e1-3fca-4d2c-8a41-13079de515e5 527KB in 1879ms
+[2026-05-14T04:56:09Z] download ok [64/64] b5636fc3-0960-43d7-ab72-def6999835f4 1104KB in 1765ms
+[2026-05-14T04:56:09Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:56:09Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:56:10Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=518ms db=688ms
+[2026-05-14T04:56:10Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:56:12Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=544ms db=687ms
+[2026-05-14T04:56:12Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=1728
+[2026-05-14T04:56:12Z] Fetched 64 rows from DB
+[2026-05-14T04:56:13Z] download ok [1/64] 5f4fc953-e855-4514-a8c0-227ce30d5f19 1335KB in 1767ms
+[2026-05-14T04:56:14Z] download ok [2/64] 4b6efb37-0d5d-4e21-a32a-6b5f809e420a 516KB in 2060ms
+[2026-05-14T04:56:14Z] download ok [3/64] 984f2438-662c-4fa8-82db-ddf2d25186bb 254KB in 2270ms
+[2026-05-14T04:56:14Z] download ok [4/64] 034a45e8-1a62-4422-b410-b1af980b6fb1 700KB in 2540ms
+[2026-05-14T04:56:14Z] download ok [5/64] 0f563302-00cf-49e8-8658-8b488667f9fc 999KB in 2580ms
+[2026-05-14T04:56:15Z] download ok [10/64] d4738ad8-47f8-4bd8-9d19-7c4fc7183e44 971KB in 3638ms
+[2026-05-14T04:56:16Z] download ok [15/64] f46d7fec-61f6-419d-8c85-ed6ad748f1ff 922KB in 1569ms
+[2026-05-14T04:56:17Z] download ok [20/64] 48a4982e-28f4-42d2-9a53-ae2b2853a9ab 568KB in 1387ms
+[2026-05-14T04:56:18Z] download ok [25/64] 67d835b1-ab1a-4776-bedd-7cc7b75650bf 668KB in 1780ms
+[2026-05-14T04:56:18Z] download ok [30/64] 1fde5b86-fae0-4d8e-b06d-6a2267f2fa99 1268KB in 2258ms
+[2026-05-14T04:56:19Z] download ok [35/64] a4ebfa8c-99cc-42f7-9c94-6cd226557880 1653KB in 2890ms
+[2026-05-14T04:56:20Z] download ok [40/64] 31cb007f-9db9-4524-86ca-0ee718e0efd3 691KB in 1791ms
+[2026-05-14T04:56:21Z] download ok [45/64] 9016c4ce-badd-4d33-b1d8-dc6ba75ec887 1097KB in 2221ms
+[2026-05-14T04:56:22Z] download ok [50/64] a7e82d6c-4848-4046-9cd1-8466bd6269cc 1544KB in 3052ms
+[2026-05-14T04:56:23Z] download ok [55/64] 0079e6d6-079c-47fd-acb4-0fedeab7c7f1 114KB in 1186ms
+[2026-05-14T04:56:24Z] download ok [60/64] 76a4d4e5-6fbb-4d99-9984-de3e7d7dce4e 1299KB in 2744ms
+[2026-05-14T04:56:24Z] download ok [64/64] a42edf41-931a-4c09-8107-05e317e8336c 1504KB in 2189ms
+[2026-05-14T04:56:25Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:56:25Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:56:26Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=533ms db=672ms
+[2026-05-14T04:56:26Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:56:27Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=532ms db=690ms
+[2026-05-14T04:56:27Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=1792
+[2026-05-14T04:56:27Z] Fetched 64 rows from DB
+[2026-05-14T04:56:29Z] download ok [1/64] f9a452cc-45aa-48f5-9f42-02a66375b84c 950KB in 2362ms
+[2026-05-14T04:56:29Z] download ok [2/64] ba40d6ca-8ddb-4bb8-b32f-8f2151db79cf 588KB in 2389ms
+[2026-05-14T04:56:30Z] download ok [3/64] 74ca9dbb-0a23-45f1-8315-012e6937fb53 533KB in 2582ms
+[2026-05-14T04:56:30Z] download ok [4/64] 1bb99279-5e13-4a9f-84d1-d7f38913283e 501KB in 2816ms
+[2026-05-14T04:56:30Z] download ok [5/64] 36965168-9c69-4f69-97c6-ec98ea8a58ff 540KB in 2910ms
+[2026-05-14T04:56:30Z] download ok [10/64] b809e460-3d75-4bb2-87fb-365bedcc2c03 853KB in 3342ms
+[2026-05-14T04:56:32Z] download ok [15/64] 54cb79f0-ef41-40a4-a302-3a4f0ccf54d6 1078KB in 2512ms
+[2026-05-14T04:56:33Z] download ok [20/64] 49e917b5-6ce4-46e1-bd91-ee3fa52cce29 1386KB in 1643ms
+[2026-05-14T04:56:33Z] download ok [25/64] 83ddcb01-7d20-4ad5-a2ae-94afe12420ed 1535KB in 3458ms
+[2026-05-14T04:56:35Z] download ok [30/64] da0d1220-3f4b-406c-a5d0-3a6ef542effc 1251KB in 1548ms
+[2026-05-14T04:56:35Z] download ok [35/64] 2605aed2-8657-4d19-b9ab-46264adc210f 700KB in 1580ms
+[2026-05-14T04:56:36Z] download ok [40/64] a3e2bb2e-82e2-4dd7-8635-de00b86aa5fc 712KB in 1663ms
+[2026-05-14T04:56:37Z] download ok [45/64] 68b7a186-35e6-4665-b572-58f7e8654d8d 988KB in 1749ms
+[2026-05-14T04:56:38Z] download ok [50/64] 2d16ec7d-3b14-4937-a2fe-b13306a22621 643KB in 1569ms
+[2026-05-14T04:56:39Z] download ok [55/64] 782d0497-219b-4b73-be21-7588a1cb5b37 937KB in 2837ms
+[2026-05-14T04:56:40Z] download ok [60/64] 060537ae-2f18-423f-8aee-8f3058870a4f 1056KB in 1891ms
+[2026-05-14T04:56:40Z] download ok [64/64] 43d5cfa6-d137-4b40-99ba-39a7d988c633 887KB in 1196ms
+[2026-05-14T04:56:40Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:56:40Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:56:41Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=539ms db=683ms
+[2026-05-14T04:56:41Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:56:42Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=568ms db=672ms
+[2026-05-14T04:56:42Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=1856
+[2026-05-14T04:56:43Z] Fetched 64 rows from DB
+[2026-05-14T04:56:44Z] download ok [1/64] 0e5814b6-2adc-4db0-9d17-1f3d00ad4b64 820KB in 1482ms
+[2026-05-14T04:56:44Z] download ok [2/64] 92da9f3e-0108-41d2-8a6c-75d8f35137b4 395KB in 1533ms
+[2026-05-14T04:56:45Z] download ok [3/64] 3fb1a69b-e663-43dd-b2c1-c7343753b373 1311KB in 2380ms
+[2026-05-14T04:56:45Z] download ok [4/64] 10dc3385-5859-44f7-b170-78c971a676aa 595KB in 2411ms
+[2026-05-14T04:56:45Z] download ok [5/64] f3d1119b-4beb-4000-b2ba-1879a240b170 654KB in 2868ms
+[2026-05-14T04:56:46Z] download ok [10/64] bc3da4bb-5e50-4c82-8467-5f035820cd24 1171KB in 3127ms
+[2026-05-14T04:56:47Z] download ok [15/64] e43b70ac-01a0-4f30-9d27-5c7e5cea3fdc 472KB in 1354ms
+[2026-05-14T04:56:47Z] download ok [20/64] 4f3b6bc7-a36b-4a8e-a300-08be7e8a14bd 902KB in 1615ms
+[2026-05-14T04:56:48Z] download ok [25/64] a8cd1123-dca9-4375-9107-335d28817c88 614KB in 1372ms
+[2026-05-14T04:56:49Z] download ok [30/64] 0b4f5ae8-a840-434e-b9f8-28491ec97c7c 515KB in 1258ms
+[2026-05-14T04:56:49Z] download ok [35/64] ad36a3da-5678-4f29-996a-63d5c6b94d11 929KB in 2276ms
+[2026-05-14T04:56:50Z] download ok [40/64] f5cfe90b-1446-4793-a92f-be2b1890f5a2 397KB in 984ms
+[2026-05-14T04:56:51Z] download ok [45/64] 1dfcda6b-54b2-4fac-b0a0-eff4bba566b7 931KB in 1317ms
+[2026-05-14T04:56:52Z] download ok [50/64] 3181d0ad-38e6-4646-8523-68fc1b6053de 1093KB in 2041ms
+[2026-05-14T04:56:53Z] download ok [55/64] 08381f50-6d9d-477e-98be-532b4f273645 1266KB in 2448ms
+[2026-05-14T04:56:53Z] download ok [60/64] 3dd7234a-a400-4509-b68d-f0f4f626e7b0 615KB in 1609ms
+[2026-05-14T04:56:54Z] download ok [64/64] 1bc9223c-ed4c-484a-881c-84340de92e82 1167KB in 1199ms
+[2026-05-14T04:56:54Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:56:54Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:56:55Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=663ms db=685ms
+[2026-05-14T04:56:55Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:56:57Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=653ms db=680ms
+[2026-05-14T04:56:57Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=1920
+[2026-05-14T04:56:57Z] Fetched 64 rows from DB
+[2026-05-14T04:56:58Z] download ok [1/64] 1888814f-dbe2-48c1-a0c2-895350c4873d 1038KB in 1843ms
+[2026-05-14T04:56:59Z] download ok [2/64] 1bbdd907-7bd7-4134-951d-5d7ea9b89663 507KB in 2280ms
+[2026-05-14T04:56:59Z] download ok [3/64] 5cfdc901-078a-4cd5-bcc7-236de55fa21e 1095KB in 2646ms
+[2026-05-14T04:56:59Z] download ok [4/64] 1c6bccf6-098c-4361-98bb-bd3f0b3eafb6 581KB in 2690ms
+[2026-05-14T04:56:59Z] download ok [5/64] 6a2d3c44-10a2-4917-946c-d9a33a0590d9 547KB in 2791ms
+[2026-05-14T04:57:00Z] download ok [10/64] 81b2ee2f-5714-4d2f-8a03-8f1cd15a6c96 790KB in 1665ms
+[2026-05-14T04:57:01Z] download ok [15/64] 905e7805-ed9c-4942-ac22-db48a3b4ce3d 1094KB in 1368ms
+[2026-05-14T04:57:01Z] download ok [20/64] b400471d-b06c-48dd-8707-9a19b8786a26 434KB in 1134ms
+[2026-05-14T04:57:02Z] download ok [25/64] a1f46a89-54aa-4bdc-81d0-374f6e052e83 246KB in 1044ms
+[2026-05-14T04:57:03Z] download ok [30/64] c19272dc-fbcd-46b5-a92e-af4fed98f1d2 1016KB in 1697ms
+[2026-05-14T04:57:04Z] download ok [35/64] 90136172-50d8-4ddb-a9bc-dd8cb14f87d7 997KB in 1957ms
+[2026-05-14T04:57:04Z] download ok [40/64] 36b2a420-bd22-482d-a6cd-0133e59bd290 254KB in 1145ms
+[2026-05-14T04:57:05Z] download ok [45/64] 3c264e2e-ead6-4e7d-b3d5-526587ed2add 384KB in 1214ms
+[2026-05-14T04:57:06Z] download ok [50/64] e3d15495-4b78-456c-8f6b-4a05ac57a956 544KB in 1376ms
+[2026-05-14T04:57:07Z] download ok [55/64] fe5a62e9-2363-40a9-83de-dbd96da04dc6 1156KB in 1913ms
+[2026-05-14T04:57:08Z] download ok [60/64] aaf1ad6c-1298-4ff5-b278-e07ea706299d 1969KB in 2414ms
+[2026-05-14T04:57:08Z] download ok [64/64] 167553ca-4974-4cf1-a089-d9fa7d3522b1 1720KB in 3261ms
+[2026-05-14T04:57:08Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:57:08Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:57:10Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=486ms db=676ms
+[2026-05-14T04:57:10Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:57:11Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=514ms db=691ms
+[2026-05-14T04:57:11Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=1984
+[2026-05-14T04:57:11Z] Fetched 64 rows from DB
+[2026-05-14T04:57:13Z] download ok [1/64] 90c8e0bc-b4b3-44f0-a8f6-73ea4c68641c 980KB in 1656ms
+[2026-05-14T04:57:13Z] download ok [2/64] 926210b9-601d-45ea-a481-643d24d53723 929KB in 1888ms
+[2026-05-14T04:57:14Z] download ok [3/64] e7e2fa81-47fa-4f46-ab29-fa0de7c37230 273KB in 1162ms
+[2026-05-14T04:57:14Z] download ok [4/64] f92a3e1a-857e-434a-8b23-c32b788e59d8 1384KB in 1582ms
+[2026-05-14T04:57:14Z] download ok [5/64] 13ecc6cf-081b-4e62-bee2-80c052e98fe5 940KB in 3427ms
+[2026-05-14T04:57:15Z] download ok [10/64] 918b85b5-5c5e-430b-9f75-6a52b65c308f 1404KB in 4267ms
+[2026-05-14T04:57:15Z] download ok [15/64] b0308d24-6f01-4220-b855-b8d14919d2be 313KB in 937ms
+[2026-05-14T04:57:16Z] download ok [20/64] 42888d64-e716-4312-8e17-3e4131da0e07 1670KB in 5175ms
+[2026-05-14T04:57:17Z] download ok [25/64] a6ae6714-b284-41d9-ba2f-7027727e3507 1432KB in 1864ms
+[2026-05-14T04:57:18Z] download ok [30/64] 3e99d6ca-566a-4766-bb15-78e0db585c06 1085KB in 1824ms
+[2026-05-14T04:57:19Z] download ok [35/64] 94ae0a06-852a-43ec-9acc-d7bc4744fba8 1629KB in 2210ms
+[2026-05-14T04:57:19Z] download ok [40/64] 43202fbe-6c81-436b-ac32-86f3fbc32d80 535KB in 1703ms
+[2026-05-14T04:57:20Z] download ok [45/64] 83c75295-3231-48a5-a6a1-c275c51fef7d 173KB in 915ms
+[2026-05-14T04:57:21Z] download ok [50/64] a1bad04c-8811-4942-9ea0-89bed8aac3bd 680KB in 1557ms
+[2026-05-14T04:57:22Z] download ok [55/64] 52c08eec-3b28-42ed-8836-e57ce73e6208 891KB in 2475ms
+[2026-05-14T04:57:22Z] download ok [60/64] 2711b21f-fb34-4d11-b31a-22c13035f91a 622KB in 948ms
+[2026-05-14T04:57:23Z] download ok [64/64] 9b7390a6-2d05-4785-8bfb-1c257800cf67 648KB in 1119ms
+[2026-05-14T04:57:23Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:57:23Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:57:24Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=549ms db=1033ms
+[2026-05-14T04:57:24Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:57:25Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=472ms db=677ms
+[2026-05-14T04:57:25Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=2048
+[2026-05-14T04:57:25Z] Fetched 64 rows from DB
+[2026-05-14T04:57:27Z] download ok [1/64] 45869bc3-ac31-409b-b953-e3a4941e0e16 687KB in 1191ms
+[2026-05-14T04:57:27Z] download ok [2/64] 1a7a6a17-30a2-45a7-b5e3-18c1f7154bc8 741KB in 1463ms
+[2026-05-14T04:57:27Z] download ok [3/64] 64abd80c-782b-4857-87eb-570d3b2eae34 230KB in 1736ms
+[2026-05-14T04:57:27Z] download ok [4/64] 27c990eb-a17d-46b8-b280-ea67b2ff6712 460KB in 1882ms
+[2026-05-14T04:57:27Z] download ok [5/64] 5f97f0f8-2833-4a66-8bcf-3a61ee5d22b4 309KB in 914ms
+[2026-05-14T04:57:28Z] download ok [10/64] b9a9d3e2-ca9d-4317-a5ab-f4d674544fe4 906KB in 2899ms
+[2026-05-14T04:57:29Z] download ok [15/64] 8f5f390b-5dc2-4830-a161-2c7ed033dc05 1017KB in 1946ms
+[2026-05-14T04:57:30Z] download ok [20/64] b5eed06c-6347-4dcb-86e6-55cd46e97c5c 1733KB in 2111ms
+[2026-05-14T04:57:31Z] download ok [25/64] 242965df-1755-4d39-beac-6416d045b814 490KB in 1330ms
+[2026-05-14T04:57:31Z] download ok [30/64] ad8201c4-06cb-4dd5-a963-1c2021e8e5ba 319KB in 781ms
+[2026-05-14T04:57:31Z] download ok [35/64] cf189d3d-a1b1-4501-9589-c499e81d4197 315KB in 862ms
+[2026-05-14T04:57:32Z] download ok [40/64] 83c99849-75a8-45c0-8291-42dedeabfe12 295KB in 878ms
+[2026-05-14T04:57:33Z] download ok [45/64] e771473a-2e10-4feb-8871-100612a52b06 476KB in 946ms
+[2026-05-14T04:57:33Z] download ok [50/64] d6b606d2-5c02-461c-9000-558ccccac3e7 273KB in 975ms
+[2026-05-14T04:57:34Z] download ok [55/64] 887b103c-6437-48e5-aa77-aa4b3daefadf 398KB in 1423ms
+[2026-05-14T04:57:35Z] download ok [60/64] 050ce6ba-e1df-4632-8013-6cb900a1fa9e 2643KB in 10005ms
+[2026-05-14T04:57:36Z] download ok [64/64] 4822f14c-92b1-4ffc-a176-0a0a0e106b0a 2830KB in 5160ms
+[2026-05-14T04:57:36Z] Encoding 64 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:57:36Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:57:37Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=522ms db=700ms
+[2026-05-14T04:57:37Z]   encode batch [2/2] starting size=32…
+[2026-05-14T04:57:38Z]   encode batch [2/2] done size=32 encoded_ok=32 inserted=32 encode=436ms db=704ms
+[2026-05-14T04:57:38Z] Chunk done: encoded 64 inserted=64 run_rows_fetched=2112
+[2026-05-14T04:57:38Z] Fetched 47 rows from DB
+[2026-05-14T04:57:40Z] download ok [1/47] 74e7f68a-8d29-4abf-b276-e1db433ec039 326KB in 1098ms
+[2026-05-14T04:57:41Z] download ok [2/47] 37390128-02b8-4a11-b055-427999bc0ba3 298KB in 2384ms
+[2026-05-14T04:57:41Z] download ok [3/47] f19787da-9028-4a86-ad31-3f83ee405670 726KB in 2604ms
+[2026-05-14T04:57:41Z] download ok [4/47] dd8a0f68-e5c2-45e4-9f33-a658b4d0efd4 929KB in 2821ms
+[2026-05-14T04:57:42Z] download ok [5/47] 6f214fb4-be6b-4561-9a07-0c2a75c4e417 739KB in 3512ms
+[2026-05-14T04:57:44Z] download ok [10/47] 8c173ad4-7724-43d7-90a3-8e97802b2cde 5196KB in 2766ms
+[2026-05-14T04:57:49Z] download ok [15/47] 9da1baba-8801-4752-bd46-682601905aea 6683KB in 7121ms
+[2026-05-14T04:57:53Z] download heartbeat: done=19/47 ok=19 failed=0 in_flight=28 ~1.3 ok/s avg=4209ms total=51.3MB
+[2026-05-14T04:57:56Z] download ok [20/47] 011ac0e3-9c35-4ca4-8c40-a3845d76bcfa 7215KB in 12407ms
+[2026-05-14T04:57:59Z] download ok [25/47] 4f1a7d11-d544-4581-b8a5-6f50ddacc9da 3001KB in 1615ms
+[2026-05-14T04:58:02Z] download ok [30/47] 67d217cf-a75d-4c30-8ebc-79e629bc5a61 5545KB in 23885ms
+[2026-05-14T04:58:07Z] download ok [35/47] 9001f457-1f1c-4b4d-b3bd-03dd0b8e8623 6715KB in 6898ms
+[2026-05-14T04:58:08Z] download heartbeat: done=38/47 ok=38 failed=0 in_flight=9 ~1.3 ok/s avg=7053ms total=136.0MB
+[2026-05-14T04:58:09Z] download ok [40/47] eb4471b1-bcf7-42d7-908e-9a4d7b750a2c 561KB in 2647ms
+[2026-05-14T04:58:10Z] download ok [45/47] 216b392b-deb6-48b7-996b-a0da2bd7db75 6591KB in 7534ms
+[2026-05-14T04:58:11Z] download ok [47/47] 40dc4fc5-7fca-45d1-b522-957e700426ef 6241KB in 32270ms
+[2026-05-14T04:58:11Z] Encoding 47 images on device=mps (2 batch(es) of up to 32)…
+[2026-05-14T04:58:11Z]   encode batch [1/2] starting size=32…
+[2026-05-14T04:58:12Z]   encode batch [1/2] done size=32 encoded_ok=32 inserted=32 encode=524ms db=678ms
+[2026-05-14T04:58:12Z]   encode batch [2/2] starting size=15…
+[2026-05-14T04:58:13Z]   encode batch [2/2] done size=15 encoded_ok=15 inserted=15 encode=408ms db=333ms
+[2026-05-14T04:58:13Z] Chunk done: encoded 47 inserted=47 run_rows_fetched=2159
+[2026-05-14T04:58:13Z] No more rows to process.
+[2026-05-14T04:58:13Z] embed_worker finished.

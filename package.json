@@ -13,6 +13,7 @@
     "ui:open": "npx tsx generate-ui.ts && open before-after.html",
     "tag-nobg": "python3 tag-nobg-quality.py",
     "embed": "python3 embed_worker.py",
+    "embed:run": "./run_embed.sh",
     "embed:setup": "python3 -m venv venv && ./venv/bin/pip install sentence-transformers psycopg2-binary pgvector pillow requests torch"
   },
   "dependencies": {

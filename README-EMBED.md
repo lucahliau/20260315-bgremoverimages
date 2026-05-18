@@ -26,6 +26,16 @@ source .env   # DATABASE_URL + R2_PUBLIC_URL (same as remove-bg)
 ./venv/bin/python embed_worker.py --limit 100 --download-workers 12 --batch-size 32
 ```
 
+For unattended runs (overnight, lid-closed, etc.) use the launcher — it
+sources `.env`, runs under `caffeinate -dimsu` so the system / display /
+disk never sleep, and auto-restarts on the encode-watchdog exit code 124:
+
+```bash
+./run_embed.sh                                   # default args
+./run_embed.sh --download-workers 12 --batch-size 32
+npm run embed:run -- --download-workers 12 --batch-size 32
+```
+
 Or install into your own environment:
 
 ```bash

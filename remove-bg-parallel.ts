@@ -45,7 +45,12 @@ const R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY!;
 const R2_BUCKET_NAME = process.env.R2_BUCKET_NAME!;
 const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL!.replace(/\/$/, "");
 
-const IMAGE_COUNT = process.argv[2] === undefined ? Infinity : Math.max(1, parseInt(process.argv[2], 10));
+const IMAGE_COUNT = (() => {
+  const raw = process.argv[2];
+  if (raw === undefined || raw === "") return Infinity;
+  const n = parseInt(raw, 10);
+  return Number.isNaN(n) ? Infinity : Math.max(1, n);
+})();
 const PARALLEL_CHAINS = Math.max(1, parseInt(process.env.PARALLEL_CHAINS || process.argv[3] || "5", 10));
 const MAX_RETRIES = 1;
 const PROGRESS_FILE = path.join(__dirname, "progress.json");
