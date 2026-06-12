@@ -14,7 +14,10 @@
     "tag-nobg": "python3 tag-nobg-quality.py",
     "embed": "python3 embed_worker.py",
     "embed:run": "./run_embed.sh",
-    "embed:setup": "python3 -m venv venv && ./venv/bin/pip install sentence-transformers psycopg2-binary pgvector pillow requests torch"
+    "embed:setup": "python3 -m venv venv && ./venv/bin/pip install sentence-transformers psycopg2-binary pgvector pillow requests torch",
+    "tag-clothing": "python3 tag_clothing_worker.py",
+    "tag-clothing:run": "./venv/bin/python3 tag_clothing_worker.py --device mps",
+    "tag-clothing:setup": "./venv/bin/pip install open_clip_torch"
   },
   "dependencies": {
     "pg": "^8.14.1",

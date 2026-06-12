@@ -6,6 +6,9 @@ run.log
 tag-nobg-quality-progress.json
 tag-nobg-quality-history.jsonl
 tag-nobg-quality.log
+tag-clothing-progress.json
+tag-clothing-history.jsonl
+tag-clothing.log
 .env
 node_modules/
 venv/
