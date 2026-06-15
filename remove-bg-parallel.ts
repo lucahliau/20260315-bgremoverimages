@@ -425,15 +425,32 @@ async function main() {
   const allKeySet = new Set(allKeys);
   const rejectStems = buildRejectStemSet(allKeys);
 
+  // Dead-letter images that have failed repeatedly. A genuine failure leaves no
+  // -nobg.png and no __REJECT marker and is never added to completed, so without
+  // this guard it gets re-selected on EVERY run forever (the "N image(s) failed
+  // every sweep" loop). progress.failed records one entry per failed attempt, so
+  // its per-key count is the lifetime attempt count. Tunable / resettable via
+  // NOBG_MAX_FAILURES (raise it, or clear progress.failed, to retry them).
+  const MAX_FAILURES = Math.max(1, Number(process.env.NOBG_MAX_FAILURES ?? 3));
+  const failCounts = new Map<string, number>();
+  for (const k of progress.failed) failCounts.set(k, (failCounts.get(k) ?? 0) + 1);
+
   const imageExts = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"]);
   const originals = allKeys.filter((k) => {
     if (k.endsWith("-nobg.png")) return false;
     if (!imageExts.has(path.extname(k).toLowerCase())) return false;
     if (hasNobgResult(k, allKeySet, rejectStems)) return false;
     if (progress.completed.includes(k)) return false;
+    if ((failCounts.get(k) ?? 0) >= MAX_FAILURES) return false;
     return true;
   });
 
+  const quarantined = [...failCounts.values()].filter((n) => n >= MAX_FAILURES).length;
+  if (quarantined > 0) {
+    log(
+      `Skipping ${quarantined} chronically-failing image(s) (≥${MAX_FAILURES} failures; raise NOBG_MAX_FAILURES or clear progress.failed to retry)`,
+    );
+  }
   log(`Found ${originals.length} unprocessed images out of ${allKeys.length} total keys`);
 
   const toProcess = [...originals].reverse().slice(0, IMAGE_COUNT);
