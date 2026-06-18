@@ -213,28 +213,36 @@ function execPromise(cmd: string, args: string[]): Promise<void> {
 // ── R2 Operations ────────────────────────────────────────────────────────────
 
 async function listOriginalKeys(): Promise<string[]> {
-  return withRetry("R2 listing", async () => {
-    const keys: string[] = [];
-    let token: string | undefined;
-    do {
-      const res = await r2.send(
+  // Retry the SINGLE failing page (keeping its continuation token) rather than
+  // wrapping the whole pagination in withRetry. The old form restarted the
+  // entire listing from key zero on any transient socket error — and once the
+  // bucket grew past ~100k objects, a long list reliably hit one of those mid-
+  // way, restarted, hit another, and looped until the 110-min batch timeout, so
+  // nobg made ZERO progress every sweep. Per-page retry keeps all prior pages.
+  const keys: string[] = [];
+  let token: string | undefined;
+  let page = 0;
+  do {
+    const res = await withRetry(`R2 list page ${page + 1}`, () =>
+      r2.send(
         new ListObjectsV2Command({
           Bucket: R2_BUCKET_NAME,
           Prefix: "products/",
           ContinuationToken: token,
           MaxKeys: 1000,
         })
-      );
-      for (const obj of res.Contents ?? []) {
-        if (obj.Key) keys.push(obj.Key);
-      }
-      token = res.NextContinuationToken;
-      if (keys.length > 0 && keys.length % 1000 === 0) {
-        log(`   Listed ${keys.length} keys so far...`);
-      }
-    } while (token);
-    return keys;
-  });
+      )
+    );
+    for (const obj of res.Contents ?? []) {
+      if (obj.Key) keys.push(obj.Key);
+    }
+    token = res.NextContinuationToken;
+    page++;
+    if (keys.length > 0 && keys.length % 10000 === 0) {
+      log(`   Listed ${keys.length} keys so far...`);
+    }
+  } while (token);
+  return keys;
 }
 
 async function downloadToFile(key: string, destPath: string): Promise<void> {
