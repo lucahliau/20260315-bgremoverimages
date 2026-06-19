@@ -9,6 +9,10 @@ tag-nobg-quality.log
 tag-clothing-progress.json
 tag-clothing-history.jsonl
 tag-clothing.log
+person-scan-progress.json
+person-scan-history.jsonl
+person-scan.log
+__pycache__/
 .env
 node_modules/
 venv/
