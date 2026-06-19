@@ -99,8 +99,10 @@ def log_line(msg: str, also_print: bool = True, lock: threading.Lock | None = No
         _write()
 
 
-def get_nobg_url(original_url: str, r2_base_url: str) -> str | None:
-    """Mirror backend src/lib/images.ts getNobgUrl."""
+def get_nobg_key(original_url: str, r2_base_url: str) -> str | None:
+    """R2 object KEY for the -nobg.png variant (products/.../x-nobg.png), or None
+    if the url isn't a product image. Mirrors backend getNobgUrl's path rule, but
+    returns the key (the S3 API needs the key; the public URL is base + '/' + key)."""
     base = r2_base_url.rstrip("/")
     clean = original_url.split("?")[0].split("#")[0]
     if clean.startswith(base):
@@ -117,27 +119,111 @@ def get_nobg_url(original_url: str, r2_base_url: str) -> str | None:
         name_without_ext = filename.rsplit(".", 1)[0]
     else:
         name_without_ext = filename
-    nobg_path = path[: last_slash + 1] + name_without_ext + "-nobg.png"
-    return f"{base}/{nobg_path}"
+    return path[: last_slash + 1] + name_without_ext + "-nobg.png"
+
+
+def get_nobg_url(original_url: str, r2_base_url: str) -> str | None:
+    """Public r2.dev URL for the -nobg.png variant. Mirror backend getNobgUrl."""
+    key = get_nobg_key(original_url, r2_base_url)
+    return f"{r2_base_url.rstrip('/')}/{key}" if key else None
+
+
+# --- R2 download transport ---------------------------------------------------
+# Prefer the AUTHENTICATED S3 API (the same endpoint remove-bg-parallel.ts and
+# upload.ts already use). The public r2.dev URL is per-IP rate-limited, so the
+# embed worker's concurrent downloads draw 429s from one home IP; the S3 endpoint
+# has no such per-IP throttle. boto3 may be absent (the managed venv predates
+# this change); if so we transparently fall back to the public URL + retries, so
+# this file is safe to land BEFORE boto3 is in the venv.
+try:
+    import boto3 as _boto3
+    from botocore.config import Config as _BotoConfig
+
+    _BOTO3_OK = True
+except Exception:
+    _BOTO3_OK = False
+
+_USE_S3 = os.environ.get("USE_S3_DOWNLOAD", "auto").strip().lower()
+_S3_BUCKET = os.environ.get("R2_BUCKET_NAME", "").strip()
+_s3_client = None
+
+# Status codes worth retrying (transient). Any other HTTP error — notably 404/403
+# — is permanent: the object is missing or forbidden and re-trying won't help.
+_TRANSIENT_HTTP = {408, 425, 429, 500, 502, 503, 504}
+_MAX_DOWNLOAD_ATTEMPTS = max(1, int(os.environ.get("EMBED_DOWNLOAD_ATTEMPTS", "3")))
+
+
+class _PermanentDownloadError(Exception):
+    """Missing/forbidden/corrupt — quarantine the item, don't retry."""
+
+
+class _TransientDownloadError(Exception):
+    """Throttle/timeout/5xx — retry; if it persists, leave the item for next run."""
+
+    def __init__(self, msg: str, retry_after: float | None = None) -> None:
+        super().__init__(msg)
+        self.retry_after = retry_after
+
+
+def s3_enabled() -> bool:
+    """True when we can and should fetch via the authenticated S3 API."""
+    if _USE_S3 in ("0", "false", "no", "off"):
+        return False
+    if not _BOTO3_OK or not _S3_BUCKET:
+        return False
+    return bool(
+        os.environ.get("R2_ACCOUNT_ID")
+        and os.environ.get("R2_ACCESS_KEY_ID")
+        and os.environ.get("R2_SECRET_ACCESS_KEY")
+    )
+
+
+def get_s3_client() -> Any:
+    global _s3_client
+    if _s3_client is None:
+        acct = os.environ["R2_ACCOUNT_ID"]
+        _s3_client = _boto3.client(
+            "s3",
+            endpoint_url=f"https://{acct}.r2.cloudflarestorage.com",
+            aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"],
+            aws_secret_access_key=os.environ["R2_SECRET_ACCESS_KEY"],
+            region_name="auto",
+            config=_BotoConfig(
+                # We run our own classified retry loop, so disable boto's.
+                retries={"max_attempts": 0, "mode": "standard"},
+                connect_timeout=10,
+                read_timeout=30,
+                max_pool_connections=64,
+            ),
+        )
+    return _s3_client
 
 
 def load_progress() -> tuple[set[str], set[str]]:
+    """Return (completed_ids, permanent_failed_ids).
+
+    Backward compatible: an old file with only {completed, failed} loads
+    `completed` and starts the permanent set EMPTY — the legacy flat `failed`
+    set conflated transient 429s with real 404s, so we drop it ONCE here. Real
+    permanent failures re-accumulate under the new classifier within a chunk or
+    two, and genuinely-embeddable items wrongly marked failed get a fresh try.
+    """
     if not PROGRESS_FILE.exists():
         return set(), set()
     try:
         data = json.loads(PROGRESS_FILE.read_text(encoding="utf-8"))
         completed = set(str(x) for x in (data.get("completed") or []))
-        failed = set(str(x) for x in (data.get("failed") or []))
-        return completed, failed
+        permanent = set(str(x) for x in (data.get("permanent") or []))
+        return completed, permanent
     except (json.JSONDecodeError, OSError):
         return set(), set()
 
 
-def save_progress(completed: set[str], failed: set[str]) -> None:
+def save_progress(completed: set[str], permanent: set[str]) -> None:
     """Write progress snapshot. Caller MUST already hold the progress lock."""
     PROGRESS_FILE.write_text(
         json.dumps(
-            {"completed": sorted(completed), "failed": sorted(failed)},
+            {"completed": sorted(completed), "permanent": sorted(permanent)},
             indent=2,
         ),
         encoding="utf-8",
@@ -162,14 +248,25 @@ def require_env() -> tuple[str, str]:
     return db, r2.rstrip("/")
 
 
-def fetch_work_batch(conn: Any, model: str, limit: int) -> list[tuple[str, str]]:
-    """Return list of (item_id, imageUrl) needing embeddings (DB is source of truth)."""
+def fetch_work_batch(
+    conn: Any, model: str, limit: int, exclude_ids: list[str] | None = None
+) -> list[tuple[str, str]]:
+    """Return list of (item_id, imageUrl) needing embeddings (DB is source of truth).
+
+    `exclude_ids` are items known to fail permanently (missing -nobg.png, etc.).
+    Without excluding them, a block of dead rows with the newest createdAt sits at
+    the TOP of every batch and re-fails forever, so the run exhausts its --limit on
+    poison and never reaches the real backlog underneath — the cause of ~0
+    throughput. The anti-join with an empty array is a no-op (keeps all rows).
+    """
     cur = conn.cursor()
+    exclude = exclude_ids or []
     cur.execute(
         """
         SELECT ci.id::text, ci."imageUrl"
         FROM "ClothingItem" ci
         WHERE ci.active = true AND ci."hasNobg" = true
+          AND NOT (ci.id::text = ANY(%s::text[]))
           AND NOT EXISTS (
             SELECT 1 FROM "ItemEmbedding" ie
             WHERE ie."itemId" = ci.id AND ie.model = %s
@@ -177,7 +274,7 @@ def fetch_work_batch(conn: Any, model: str, limit: int) -> list[tuple[str, str]]
         ORDER BY ci."createdAt" DESC
         LIMIT %s
         """,
-        (model, limit),
+        (exclude, model, limit),
     )
     rows = cur.fetchall()
     cur.close()
@@ -189,8 +286,82 @@ class DownloadOutcome:
     item_id: str
     image: Any = None  # PIL.Image when ok
     error: str | None = None
+    error_kind: str | None = None  # 'permanent' | 'transient' when error is set
     bytes_downloaded: int = 0
     elapsed_ms: int = 0
+
+
+def _sleep_backoff(attempt: int, retry_after: float | None) -> None:
+    import random
+
+    if retry_after is not None and retry_after >= 0:
+        time.sleep(min(retry_after, 30.0))
+        return
+    time.sleep(min(2.0 ** attempt, 20.0) + random.uniform(0, 0.5))
+
+
+def _http_get(url: str, connect_timeout: float, read_timeout: float, max_bytes: int) -> bytes:
+    """Fetch via the public r2.dev URL. Raises _Transient/_PermanentDownloadError."""
+    import requests
+
+    try:
+        with requests.get(url, timeout=(connect_timeout, read_timeout), stream=True) as r:
+            if r.status_code in _TRANSIENT_HTTP:
+                ra = r.headers.get("Retry-After")
+                retry_after: float | None = None
+                if ra:
+                    try:
+                        retry_after = float(ra)
+                    except ValueError:
+                        retry_after = None
+                raise _TransientDownloadError(f"{r.status_code} {r.reason}", retry_after)
+            if r.status_code >= 400:
+                raise _PermanentDownloadError(f"{r.status_code} {r.reason}")
+            buf = bytearray()
+            for chunk in r.iter_content(chunk_size=64 * 1024):
+                if not chunk:
+                    continue
+                buf.extend(chunk)
+                if len(buf) > max_bytes:
+                    raise _PermanentDownloadError(f"oversized: {len(buf)} > {max_bytes}")
+            return bytes(buf)
+    except requests.Timeout as e:
+        raise _TransientDownloadError(f"timeout: {e}")
+    except requests.ConnectionError as e:
+        raise _TransientDownloadError(f"connection: {e}")
+
+
+def _s3_get(key: str, max_bytes: int) -> bytes:
+    """Fetch via the authenticated S3 API. Raises _Transient/_PermanentDownloadError."""
+    from botocore.exceptions import (
+        ClientError,
+        ConnectTimeoutError,
+        EndpointConnectionError,
+        ReadTimeoutError,
+    )
+
+    client = get_s3_client()
+    try:
+        resp = client.get_object(Bucket=_S3_BUCKET, Key=key)
+        data = resp["Body"].read(max_bytes + 1)
+        if len(data) > max_bytes:
+            raise _PermanentDownloadError(f"oversized: > {max_bytes}")
+        return data
+    except ClientError as e:
+        meta = e.response.get("ResponseMetadata", {})
+        code = meta.get("HTTPStatusCode")
+        ecode = e.response.get("Error", {}).get("Code", "")
+        if code in _TRANSIENT_HTTP or ecode in (
+            "SlowDown",
+            "RequestTimeout",
+            "InternalError",
+            "ServiceUnavailable",
+        ):
+            raise _TransientDownloadError(f"s3 {code} {ecode}")
+        # NoSuchKey / 404 / 403 — the object is genuinely missing/forbidden.
+        raise _PermanentDownloadError(f"s3 {code} {ecode or e}")
+    except (EndpointConnectionError, ConnectTimeoutError, ReadTimeoutError) as e:
+        raise _TransientDownloadError(f"s3 conn: {e}")
 
 
 def download_one(
@@ -201,51 +372,72 @@ def download_one(
     read_timeout: float = 30.0,
     max_bytes: int = 25 * 1024 * 1024,
 ) -> DownloadOutcome:
-    """Download -nobg.png and return PIL Image or error.
+    """Download the -nobg.png and return a PIL Image, or a CLASSIFIED error.
 
-    Uses a strict connect+read timeout so hung connections fail fast
-    rather than blocking the whole chunk.
+    Transient errors (429/5xx/timeout) are retried with backoff (honoring
+    Retry-After) and, if still failing, reported with error_kind='transient' so
+    the caller leaves the item for a later run instead of poisoning it. Permanent
+    errors (missing object, forbidden, oversized, no key) are reported once with
+    error_kind='permanent' so the caller can quarantine the item.
     """
-    try:
-        import requests
-        from PIL import Image
-        from io import BytesIO
-    except ImportError as e:
-        return DownloadOutcome(item_id=item_id, error=str(e))
+    from PIL import Image
+    from io import BytesIO
 
-    nobg = get_nobg_url(image_url, r2_base)
-    if not nobg:
-        return DownloadOutcome(item_id=item_id, error="no_nobg_path")
+    key = get_nobg_key(image_url, r2_base)
+    if not key:
+        return DownloadOutcome(item_id=item_id, error="no_nobg_path", error_kind="permanent")
 
+    use_s3 = s3_enabled()
     started = time.monotonic()
-    try:
-        with requests.get(nobg, timeout=(connect_timeout, read_timeout), stream=True) as r:
-            r.raise_for_status()
-            buf = bytearray()
-            for chunk in r.iter_content(chunk_size=64 * 1024):
-                if not chunk:
-                    continue
-                buf.extend(chunk)
-                if len(buf) > max_bytes:
-                    return DownloadOutcome(
-                        item_id=item_id,
-                        error=f"oversized: {len(buf)} > {max_bytes}",
-                        elapsed_ms=int((time.monotonic() - started) * 1000),
-                    )
-            data = bytes(buf)
-        img = Image.open(BytesIO(data)).convert("RGB")
-        return DownloadOutcome(
-            item_id=item_id,
-            image=img,
-            bytes_downloaded=len(data),
-            elapsed_ms=int((time.monotonic() - started) * 1000),
-        )
-    except Exception as e:
-        return DownloadOutcome(
-            item_id=item_id,
-            error=str(e),
-            elapsed_ms=int((time.monotonic() - started) * 1000),
-        )
+    last_err = "unknown"
+
+    for attempt in range(_MAX_DOWNLOAD_ATTEMPTS):
+        retry_after: float | None = None
+        try:
+            data = _s3_get(key, max_bytes) if use_s3 else _http_get(
+                f"{r2_base}/{key}", connect_timeout, read_timeout, max_bytes
+            )
+            img = Image.open(BytesIO(data)).convert("RGB")
+            return DownloadOutcome(
+                item_id=item_id,
+                image=img,
+                bytes_downloaded=len(data),
+                elapsed_ms=int((time.monotonic() - started) * 1000),
+            )
+        except _PermanentDownloadError as e:
+            return DownloadOutcome(
+                item_id=item_id,
+                error=str(e),
+                error_kind="permanent",
+                elapsed_ms=int((time.monotonic() - started) * 1000),
+            )
+        except _TransientDownloadError as e:
+            last_err, retry_after = str(e), e.retry_after
+        except Exception as e:  # decode error, unexpected — treat as permanent
+            return DownloadOutcome(
+                item_id=item_id,
+                error=f"decode/unknown: {e}",
+                error_kind="permanent",
+                elapsed_ms=int((time.monotonic() - started) * 1000),
+            )
+
+        if attempt < _MAX_DOWNLOAD_ATTEMPTS - 1:
+            _sleep_backoff(attempt, retry_after)
+
+    return DownloadOutcome(
+        item_id=item_id,
+        error=f"{last_err} (after {_MAX_DOWNLOAD_ATTEMPTS} attempts)",
+        error_kind="transient",
+        elapsed_ms=int((time.monotonic() - started) * 1000),
+    )
+
+
+def _is_missing_nobg(error: str | None) -> bool:
+    """A permanent error that means the -nobg.png object genuinely doesn't exist."""
+    if not error:
+        return False
+    e = error.lower()
+    return "404" in e or "nosuchkey" in e or "no_nobg_path" in e
 
 
 @dataclass
@@ -302,7 +494,14 @@ def main() -> None:
 
     log_lock = threading.Lock()
     progress_lock = threading.RLock()
-    completed_ids, failed_ids = load_progress()
+    completed_ids, permanent_ids = load_progress()
+    demote_missing = os.environ.get("EMBED_DEMOTE_MISSING_NOBG", "0").strip().lower() not in (
+        "0",
+        "false",
+        "no",
+        "off",
+        "",
+    )
 
     log_line("=" * 60, lock=log_lock)
     log_line(
@@ -447,7 +646,12 @@ def main() -> None:
                 break
             chunk_limit = min(chunk_limit, left)
 
-        work = fetch_work_batch(conn, args.model, chunk_limit)
+        # Exclude permanently-failed items (missing -nobg.png, etc.) so the batch
+        # advances past any poison block instead of re-failing it every run. Cap
+        # the list so the anti-join stays cheap even if the set grows large.
+        work = fetch_work_batch(
+            conn, args.model, chunk_limit, sorted(permanent_ids)[:20000]
+        )
         conn.rollback()
 
         if not work:
@@ -458,6 +662,7 @@ def main() -> None:
 
         ready: list[ReadyRow | None] = [None] * len(work)
         id_to_index = {work[i][0]: i for i in range(len(work))}
+        demote_ids: set[str] = set()  # permanent-404 items to demote after downloads
 
         chunk_started = time.monotonic()
         n_total = len(work)
@@ -526,23 +731,32 @@ def main() -> None:
 
                 if outcome.error:
                     ready[idx] = None
+                    kind = outcome.error_kind or "transient"
                     log_line(
-                        f"download failed [{n_done}/{n_total}] {outcome.item_id} "
+                        f"download {kind}-fail [{n_done}/{n_total}] {outcome.item_id} "
                         f"({outcome.elapsed_ms}ms): {outcome.error}",
                         lock=log_lock,
                     )
-                    with progress_lock:
-                        failed_ids.add(outcome.item_id)
-                        append_history(
-                            {
-                                "itemId": outcome.item_id,
-                                "model": args.model,
-                                "status": "failed",
-                                "error": outcome.error,
-                                "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                            }
-                        )
-                        save_progress(completed_ids, failed_ids)
+                    # Only PERMANENT failures are quarantined (persisted + excluded
+                    # from future work). Transient failures (429/5xx/timeout) are
+                    # left un-embedded and retried on the next chunk/run — persisting
+                    # them would poison good items that merely hit a rate limit.
+                    if kind == "permanent":
+                        with progress_lock:
+                            permanent_ids.add(outcome.item_id)
+                            append_history(
+                                {
+                                    "itemId": outcome.item_id,
+                                    "model": args.model,
+                                    "status": "failed",
+                                    "kind": "permanent",
+                                    "error": outcome.error,
+                                    "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                                }
+                            )
+                            save_progress(completed_ids, permanent_ids)
+                        if _is_missing_nobg(outcome.error):
+                            demote_ids.add(outcome.item_id)
                     continue
 
                 ready[idx] = ReadyRow(item_id=outcome.item_id, image=outcome.image)
@@ -560,6 +774,30 @@ def main() -> None:
 
         if stop_requested.is_set():
             break
+
+        # Optional source-of-truth heal: demote items whose -nobg.png is genuinely
+        # missing (hard 404) so the nobg reconcile re-generates the file, instead of
+        # them sitting in the backlog forever. OFF by default (the worker's reconcile
+        # loop already demotes on a definitive 404); enable EMBED_DEMOTE_MISSING_NOBG=1
+        # to also do it inline here for faster cleanup.
+        if demote_missing and demote_ids:
+            try:
+                dcur = conn.cursor()
+                dcur.execute(
+                    'UPDATE "ClothingItem" SET "hasNobg" = false, "updatedAt" = NOW() '
+                    'WHERE id = ANY(%s::text[]) AND "hasNobg" = true',
+                    (sorted(demote_ids),),
+                )
+                demoted = dcur.rowcount
+                conn.commit()
+                dcur.close()
+                log_line(
+                    f"demoted {demoted} missing-nobg item(s) → hasNobg=false (reconcile will regenerate)",
+                    lock=log_lock,
+                )
+            except Exception as e:
+                conn.rollback()
+                log_line(f"demote failed (non-fatal): {e}", lock=log_lock)
 
         # Encode in batches (preserve order for logging)
         to_encode: list[ReadyRow] = [r for r in ready if r is not None]
@@ -641,7 +879,7 @@ def main() -> None:
                     append_history(
                         {"itemId": item_id, "model": args.model, "status": "success", "ts": now_ts}
                     )
-                save_progress(completed_ids, failed_ids)
+                save_progress(completed_ids, permanent_ids)
 
             log_line(
                 f"  encode batch [{batch_idx}/{n_encode_batches}] done size={len(batch)} "
