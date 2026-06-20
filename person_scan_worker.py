@@ -512,18 +512,29 @@ def column_exists(conn: Any, table: str, column: str) -> bool:
 
 
 def fetch_work_batch(
-    conn: Any, limit: int, exclude_ids: list[str], scanned_col: bool, order: str
+    conn: Any, limit: int, exclude_ids: list[str], scanned_col: bool, order: str,
+    num_shards: int = 1, shard: int = 0,
 ) -> list[tuple[str, str, list[str]]]:
-    """Return (id, imageUrl, images[]) for active items needing a scan."""
+    """Return (id, imageUrl, images[]) for active items needing a scan.
+
+    When num_shards > 1 the catalog is split into N disjoint, deterministic
+    hash-shards (by id), so several processes can churn in parallel without ever
+    fetching the same row — no double-work and no R2 rename races."""
     where = ['ci.active = true', 'NOT (ci.id::text = ANY(%s::text[]))']
+    params: list[Any] = [exclude_ids]
     if scanned_col:
         where.append('ci."personScannedAt" IS NULL')
+    if num_shards > 1:
+        # ((h % n) + n) % n keeps the bucket in [0, n) even when hashtext is negative.
+        where.append("((hashtext(ci.id) %% %s) + %s) %% %s = %s")
+        params += [num_shards, num_shards, num_shards, shard]
     order_sql = "RANDOM()" if order == "random" else 'ci."createdAt" DESC'
+    params.append(limit)
     cur = conn.cursor()
     cur.execute(
         f'SELECT ci.id::text, ci."imageUrl", ci.images FROM "ClothingItem" ci '
         f'WHERE {" AND ".join(where)} ORDER BY {order_sql} LIMIT %s',
-        (exclude_ids, limit),
+        tuple(params),
     )
     rows = cur.fetchall()
     cur.close()
@@ -577,6 +588,10 @@ def main() -> None:
     p.add_argument("--download-workers", type=int, default=8, help="Parallel image downloads")
     p.add_argument("--order", choices=["recent", "random"], default="recent",
                    help="recent = newest first (resumable, prioritizes new brands); random = fair sample")
+    p.add_argument("--num-shards", type=int, default=1,
+                   help="Split the catalog into N disjoint hash-shards (by id) for safe parallel runs")
+    p.add_argument("--shard", type=int, default=0,
+                   help="Which shard in [0, num-shards) THIS process handles")
     p.add_argument("--device", default="mps", choices=["mps", "cpu", "cuda"])
     p.add_argument("--weights", default=os.environ.get("PERSON_SCAN_WEIGHTS", "yolo11s-pose.pt"))
     p.add_argument("--conf", type=float, default=0.40)
@@ -597,6 +612,16 @@ def main() -> None:
     if not args.apply and not args.dry_run:
         args.dry_run = True  # default to the safe path
 
+    if args.num_shards < 1 or not (0 <= args.shard < args.num_shards):
+        print(f"Invalid sharding: shard={args.shard} num_shards={args.num_shards}", file=sys.stderr)
+        sys.exit(1)
+    if args.num_shards > 1:
+        # Per-shard progress/history/log files so parallel shards never clobber each other.
+        global PROGRESS_FILE, HISTORY_FILE, LOG_FILE
+        PROGRESS_FILE = SCRIPT_DIR / f"person-scan-progress.shard{args.shard}.json"
+        HISTORY_FILE = SCRIPT_DIR / f"person-scan-history.shard{args.shard}.jsonl"
+        LOG_FILE = SCRIPT_DIR / f"person-scan.shard{args.shard}.log"
+
     db_url, r2_base = require_env()
     log_lock = threading.Lock()
     bucket = os.environ.get("R2_BUCKET_NAME", "").strip()
@@ -605,7 +630,8 @@ def main() -> None:
     log_line(
         f"person_scan start mode={'apply' if args.apply else 'dry-run'} weights={args.weights} "
         f"device={args.device} conf={args.conf} dominance={args.dominance_frac} tall={args.tall_frac} "
-        f"kp_conf={args.kp_conf} face_min_frac={args.face_min_frac} order={args.order} limit={args.limit or 'unlimited'} "
+        f"kp_conf={args.kp_conf} face_min_frac={args.face_min_frac} order={args.order} "
+        f"shard={args.shard}/{args.num_shards} limit={args.limit or 'unlimited'} "
         f"s3={'on' if s3_enabled() else 'off (public URL)'}",
         lock=log_lock,
     )
@@ -668,7 +694,9 @@ def main() -> None:
                 break
             chunk = min(chunk, left)
 
-        work = fetch_work_batch(conn, chunk, sorted(permanent)[:20000], scanned_col, args.order)
+        work = fetch_work_batch(
+            conn, chunk, sorted(permanent)[:20000], scanned_col, args.order, args.num_shards, args.shard
+        )
         if not work:
             log_line("No more items to scan.", lock=log_lock)
             break
