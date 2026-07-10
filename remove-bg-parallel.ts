@@ -446,6 +446,8 @@ async function main() {
   const imageExts = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"]);
   const originals = allKeys.filter((k) => {
     if (k.endsWith("-nobg.png")) return false;
+    // Person-scan / quality-gate artifacts are outputs, never inputs.
+    if (k.includes("__REJECT")) return false;
     if (!imageExts.has(path.extname(k).toLowerCase())) return false;
     if (hasNobgResult(k, allKeySet, rejectStems)) return false;
     if (progress.completed.includes(k)) return false;
@@ -461,7 +463,17 @@ async function main() {
   }
   log(`Found ${originals.length} unprocessed images out of ${allKeys.length} total keys`);
 
-  const toProcess = [...originals].reverse().slice(0, IMAGE_COUNT);
+  // PRIMARIES FIRST: `products/<retailer>/<id>/0.<ext>` is each item's primary
+  // image — the one that flips ClothingItem.hasNobg (feed eligibility). After
+  // the gallery expansion the image-level backlog (~80k) dwarfs the item-level
+  // one (~19k); plain reverse-listing order buried the primaries among gallery
+  // shots, so batches reported "processed=200 hasNobg+=0" and the item backlog
+  // never moved. Within each tier keep the old reverse order (newest-ish first).
+  const isPrimary = (k: string) => /\/0\.[a-z]+$/i.test(k);
+  const primaries = originals.filter(isPrimary).reverse();
+  const rest = originals.filter((k) => !isPrimary(k)).reverse();
+  const toProcess = [...primaries, ...rest].slice(0, IMAGE_COUNT);
+  log(`Order: ${primaries.length} item-primary images first, then ${rest.length} gallery images`);
   if (toProcess.length === 0) {
     log("Nothing to process! All images already have -nobg versions.");
     if (progress.completed.length > 0) {
